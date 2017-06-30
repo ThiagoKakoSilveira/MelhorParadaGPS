@@ -31,8 +31,10 @@ public class Principal {
 		long e = System.currentTimeMillis();
 		System.out.println("\nTempo = " + ((e-s)/1000.0));	
 		
-		int latitude = Console.scanInt("Bem Vindo ao Melhor Parada! Escreva a coordenada de Origem\n Começando pela Latitude: ");
-		int longitude = Console.scanInt("Escreva agora a Longitude: ");
+//		double latitude = Console.scanDouble("Bem Vindo ao Melhor Parada! Escreva a coordenada de Origem\n Começando pela Latitude: ");
+//		double longitude = Console.scanDouble("Escreva agora a Longitude: "); Usar a classe GPSCoordinate.
+		
+		
 	}
 
 }
