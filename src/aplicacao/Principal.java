@@ -9,6 +9,7 @@ import smartcity.gtfs.Service;
 import smartcity.gtfs.Shape;
 import smartcity.gtfs.Stop;
 import smartcity.gtfs.Trip;
+import smartcity.util.GPSCoordinate;
 import util.Console;
 
 public class Principal {
@@ -31,10 +32,10 @@ public class Principal {
 		long e = System.currentTimeMillis();
 		System.out.println("\nTempo = " + ((e-s)/1000.0));	
 		
-//		double latitude = Console.scanDouble("Bem Vindo ao Melhor Parada! Escreva a coordenada de Origem\n Começando pela Latitude: ");
-//		double longitude = Console.scanDouble("Escreva agora a Longitude: "); Usar a classe GPSCoordinate.
+		double latitude = Console.scanDouble("Bem Vindo ao Melhor Parada! Escreva a coordenada de Origem\n Começando pela Latitude: ");
+		double longitude = Console.scanDouble("Escreva agora a Longitude: "); //Usar a classe GPSCoordinate.
 		
-		
+		GPSCoordinate coordenada = new GPSCoordinate(latitude, longitude);
 	}
 
 }
