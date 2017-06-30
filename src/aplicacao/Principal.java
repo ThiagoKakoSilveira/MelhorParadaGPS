@@ -30,12 +30,16 @@ public class Principal {
 		long s = System.currentTimeMillis();
 		GTFSReader.loadStopTimes("data/stop_times.txt", trips, stops);
 		long e = System.currentTimeMillis();
-		System.out.println("\nTempo = " + ((e-s)/1000.0));	
+		System.out.println("\nTempo = " + ((e-s)/1000.0));
+				
+		double latitudeOrigem = Console.scanDouble("Bem Vindo ao Melhor Parada! Escreva a coordenada de Origem\n Começando pela Latitude: ");
+		double longitudeOrigem = Console.scanDouble("Escreva agora a Longitude: ");//aqui está estourando o double creio eu. 
 		
-		double latitude = Console.scanDouble("Bem Vindo ao Melhor Parada! Escreva a coordenada de Origem\n Começando pela Latitude: ");
-		double longitude = Console.scanDouble("Escreva agora a Longitude: "); //Usar a classe GPSCoordinate.
+		GPSCoordinate coordenadaOrigem = new GPSCoordinate(latitudeOrigem, longitudeOrigem);
 		
-		GPSCoordinate coordenada = new GPSCoordinate(latitude, longitude);
+		double latitudeDestino = Console.scanDouble("Bem Vindo ao Melhor Parada! Escreva a coordenada de Origem\n Começando pela Latitude: ");
+		double longitudeDestino = Console.scanDouble("Escreva agora a Longitude: ");
+		
 	}
 
 }
