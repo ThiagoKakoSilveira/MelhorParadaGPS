@@ -36,8 +36,8 @@ public class Principal {
 		long e = System.currentTimeMillis();
 		System.out.println("\nTempo = " + ((e-s)/1000.0));	
 		
-		String latitude = Console.scanString("Bem Vindo ao Melhor Parada! Escreva a coordenada de Origem\n Começando pela Latitude: ");
-		String longitude = Console.scanString("Escreva agora a Longitude.");
+		int latitude = Console.scanInt("Bem Vindo ao Melhor Parada! Escreva a coordenada de Origem\n Começando pela Latitude: ");
+		int longitude = Console.scanInt("Escreva agora a Longitude: ");
 	}
 
 }
