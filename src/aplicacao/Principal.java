@@ -5,7 +5,6 @@ import java.util.Scanner;
 
 import aplicacao.mineracao.PreCarregaDados;
 import datastructures.KDData;
-import util.Console;
 
 public class Principal {
 
@@ -21,29 +20,24 @@ public class Principal {
         System.out.println("Partida  --------");
         System.out.println("");
         System.out.println("Latitude  --------");
-        String latitudePartida = scanner.nextLine(); //Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
-        // seguranÃ§a do java
+        String latitudePartida = scanner.nextLine(); 
 
         System.out.println("Longitude  --------");
-        String longitudePartida = scanner.nextLine();//Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
-        // seguranÃ§a do java
+        String longitudePartida = scanner.nextLine();
 
         System.out.println("DESTINO  --------");
         System.out.println("");
         System.out.println("Latitude  --------");
-        String latitudeDestino = scanner.nextLine();//Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
-        // seguranÃ§a do java
+        String latitudeDestino = scanner.nextLine();
 
         System.out.println("Longitude  --------");
         String longitudePDestino = scanner.nextLine();
-        //Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
-        // seguranÃ§a do java
-
-//            Campos Velho
-//       -30.0940906, -51.2267142
-        //Senac POA
-//        -30.0351924, -51.2266259
-
+        
+/*        Campos Velho
+       -30.0940906, -51.2267142
+          Senac POA
+        -30.0351924, -51.2266259
+*/
 
         try {
             preCarregaDados.buscarParadasProximas(transformToKdData(latitudePartida, longitudePartida), 8);
@@ -52,7 +46,8 @@ public class Principal {
         } catch (Exception e) {
             System.err.println("Erro ao processar paradas proximas   :  " + e.getMessage());
         }
-
+        
+        scanner.close();
 
     }
 
