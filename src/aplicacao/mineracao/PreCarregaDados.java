@@ -32,12 +32,12 @@ public class PreCarregaDados {
     private Map<String, Shape> formas;
     /**
      * Servico: contem ativo/naoAtivo  e data de inicio
-     * e de fim de algum serviÃ§o nas rotas de POA
+     * e de fim de algum serviço nas rotas de POA
      */
     private Map<String, Service> servicos;
     /**
-     * Viagem:Contem Rota, ServiÃ§o, forma, acessivel a cadiera de rodas
-     * e lita de paradas por onde essa viagem passa.
+     * Viagem:Contem Rota, Serviço, forma, acessivel a cadeiras de rodas
+     * e lista de paradas por onde essa viagem passa.
      */
     private Map<String, Trip> viagens;
     /**
@@ -46,15 +46,15 @@ public class PreCarregaDados {
     private KDTree arvoreKdParadas;
 
     /**
-     * Metodo que inicializa todas as variaveis declaradas nessa classe
-     * apartir dos arquivos armazenados na pasta data, sao esse arquivos os seguintes:
+     * Metodo que inicializa todas as variáveis declaradas nessa classe
+     * apartir dos arquivos armazenados na pasta data, são esses arquivos os seguintes:
      * -paradas.txt
      * -rotas.txt
      * -formas.txt
      * -calendar.txt
      * -viagens.txt
-     * Exeptions : FileNotFoundException <p>Caso alguma ocorra, o mesmo metodo descarta todas as alteraÃ§oes,
-     * pois para este app, sao necessarias todas as variaveis inicializadas com dados</p>
+     * Exeptions : FileNotFoundException <p>Caso alguma ocorra, o mesmo método descarta todas as alterações,
+     * pois para este app, sao necessárias todas as variáveis inicializadas com dados</p>
      */
     public void starUp() {
 
@@ -72,7 +72,7 @@ public class PreCarregaDados {
             this.viagens = GTFSReader.loadTrips("data/trips.txt", rotas, servicos, formas);
 
 
-            System.out.println("Carregamento concluido");
+            System.out.println("Carregamento concluído");
             System.out.println("Criando ArvoreKD com base nas paradas lidas acima .");
             this.criarArvoreKdApartirDasParadas();
         } catch (FileNotFoundException e) {
@@ -83,8 +83,8 @@ public class PreCarregaDados {
 
     /**
      * Cria uma arvore KD com base no Map<Paradas>, para cada parada presente no map,
-     * um novo no[StopData] e criado e adicionado ao array de paradas.Finalmente apos todos os array criados
-     * e entao criada um nova KDTree com o array de paradas<p>E utilizado KDTree.class do pacote de estruturas
+     * um novo no[StopData] e criado e adicionado ao array de paradas.Finalmente após todos os array criados
+     * e então criada um nova KDTree com o array de paradas<p>É utilizado KDTree.class do pacote de estruturas
      * da bibliteca usada nesse App</p>.
      */
     public void criarArvoreKdApartirDasParadas() {
@@ -95,17 +95,17 @@ public class PreCarregaDados {
             cont++;
         }
         this.arvoreKdParadas = new KDTree(paradas);
-        System.out.println("Arvore KD com as paradas foi criada");
+        System.out.println("Árvore KD com as paradas foi criada");
     }
 
     /**
-     * Metodo  para a busca das parada(s) mais proxima(s), utiliza a KDTree presente
+     * Método  para a busca das parada(s) mais próxima(s), utiliza a KDTree presente
      * nessa classe<storng>Deve estar populada</storng>
      *
-     * @param data         KDData que contem Latidude e Longitude do ponto de GPS que sera usado para comparar com a arvoreKD
-     *                     ja previamente populada nesta mesma classe.
-     * @param tamanhoBusca Range do numero de paradas que serao retornados pelo algoritimos presente
-     *                     no metodo <p>findKNearestPoints</p>
+     * @param data         KDData que contém Latidude e Longitude do ponto de GPS que será usado para comparar com a árvoreKD
+     *                     já previamente populada nesta mesma classe.
+     * @param tamanhoBusca Range do número de paradas que serão retornados pelo algoritimos presente
+     *                     no método <p>findKNearestPoints</p>
      */
     public void buscarParadasProximas(KDData data, int tamanhoBusca) {
 
@@ -114,7 +114,7 @@ public class PreCarregaDados {
         arvoreKdParadas.findKNearestPoints(data, dataRetorno);
 
         System.out.println("Parada Mais Perto: " + ((StopData) dataRetorno[0]).getParada());
-        System.out.println("Distance: " + dataRetorno[0].distance(data));
+        System.out.println("Distância: " + dataRetorno[0].distance(data));
         System.out.println("------");
         for (KDData n : dataRetorno) {
             System.out.print(n + " \n");
