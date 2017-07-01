@@ -8,6 +8,7 @@ import datastructures.KDData;
 import util.Console;
 
 public class Principal {
+
     private static PreCarregaDados preCarregaDados;
 
 
@@ -21,22 +22,22 @@ public class Principal {
         System.out.println("");
         System.out.println("Latitude  --------");
         String latitudePartida = scanner.nextLine(); //Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
-        // segurança do java
+        // seguranÃ§a do java
 
         System.out.println("Longitude  --------");
         String longitudePartida = scanner.nextLine();//Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
-        // segurança do java
+        // seguranÃ§a do java
 
         System.out.println("DESTINO  --------");
         System.out.println("");
         System.out.println("Latitude  --------");
         String latitudeDestino = scanner.nextLine();//Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
-        // segurança do java
+        // seguranÃ§a do java
 
         System.out.println("Longitude  --------");
         String longitudePDestino = scanner.nextLine();
         //Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
-        // segurança do java
+        // seguranÃ§a do java
 
 //            Campos Velho
 //       -30.0940906, -51.2267142
@@ -66,5 +67,4 @@ public class Principal {
     public static KDData transformToKdData(String latitude, String longitude) {
         return new KDData(Double.valueOf(latitude), Double.valueOf(longitude));
     }
-
 }
