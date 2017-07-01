@@ -59,24 +59,21 @@ public class PreCarregaDados {
     public void starUp() {
 
         try {
-            System.out.println("Reading paradas.");
+            System.out.println("Carregamento iniciado");
 
-            this.paradas = GTFSReader.loadStops("data/paradas.txt");
-            System.out.println("Reading rotas.");
+            this.paradas = GTFSReader.loadStops("data/stops.txt");
 
-            this.rotas = GTFSReader.loadRoutes("data/rotas.txt");
-            System.out.println("Reading formas.");
+            this.rotas = GTFSReader.loadRoutes("data/routes.txt");
 
-            this.formas = GTFSReader.loadShapes("data/formas.txt");
-            System.out.println("Reading calendar.");
+            this.formas = GTFSReader.loadShapes("data/shapes.txt");
 
             this.servicos = GTFSReader.loadServices("data/calendar.txt");
-            System.out.println("Reading viagens.");
 
-            this.viagens = GTFSReader.loadTrips("data/viagens.txt", rotas, servicos, formas);
-            System.out.println("Reading stop times.");
+            this.viagens = GTFSReader.loadTrips("data/trips.txt", rotas, servicos, formas);
+
 
             System.out.println("Carregamento concluido");
+            System.out.println("Criando ArvoreKD com base nas paradas lidas acima .");
             this.criarArvoreKdApartirDasParadas();
         } catch (FileNotFoundException e) {
             System.err.println(String.format("Erro ao fazer carregamendo dos dados : %s   -->  ", e.getMessage()));
@@ -105,9 +102,8 @@ public class PreCarregaDados {
      * Metodo  para a busca das parada(s) mais proxima(s), utiliza a KDTree presente
      * nessa classe<storng>Deve estar populada</storng>
      *
-     * @param data KDData que contem Latidude e Longitude do ponto de GPS que sera usado para comparar com a arvoreKD
-     *             ja previamente populada nesta mesma classe.
-     *
+     * @param data         KDData que contem Latidude e Longitude do ponto de GPS que sera usado para comparar com a arvoreKD
+     *                     ja previamente populada nesta mesma classe.
      * @param tamanhoBusca Range do numero de paradas que serao retornados pelo algoritimos presente
      *                     no metodo <p>findKNearestPoints</p>
      */
