@@ -1,50 +1,62 @@
 package aplicacao;
 
 import java.io.FileNotFoundException;
-import java.util.Map;
 import java.util.Scanner;
 
-import smartcity.gtfs.GTFSReader;
-import smartcity.gtfs.Route;
-import smartcity.gtfs.Service;
-import smartcity.gtfs.Shape;
-import smartcity.gtfs.Stop;
-import smartcity.gtfs.Trip;
-import smartcity.util.GPSCoordinate;
+import aplicacao.mineracao.PreCarregaDados;
+import datastructures.KDData;
 import util.Console;
 
 public class Principal {
+    private static PreCarregaDados preCarregaDados;
 
-	public static void main(String[] args) throws FileNotFoundException {
-		
-		Scanner scanner = new Scanner (System.in);
-		
-		System.out.println("Reading stops.");
-		Map<String,Stop> stops = GTFSReader.loadStops("data/stops.txt");
-		System.out.println("Reading routes.");
-		Map<String,Route> routes = GTFSReader.loadRoutes("data/routes.txt");
-		System.out.println("Reading shapes.");
-		Map<String,Shape> shapes = GTFSReader.loadShapes("data/shapes.txt");
-		System.out.println("Reading calendar.");
-		Map<String,Service> services = GTFSReader.loadServices("data/calendar.txt");
-		System.out.println("Reading trips.");
-		Map<String,Trip> trips = GTFSReader.loadTrips("data/trips.txt",routes,services,shapes);
-		System.out.println("Reading stop times.");
-		long s = System.currentTimeMillis();
-		GTFSReader.loadStopTimes("data/stop_times.txt", trips, stops);
-		long e = System.currentTimeMillis();
-		System.out.println("\nTempo = " + ((e-s)/1000.0));
-				
-		double latitudeOrigem = -30.150988899999994;//scanner.nextDouble();
-		double longitudeOrigem = -51.165521;//Console.scanDouble("Escreva agora a Longitude: ");//aqui est� estourando o double creio eu. 
-		
-		GPSCoordinate coordenadaOrigem = new GPSCoordinate(latitudeOrigem, longitudeOrigem);
-		
-		double latitudeDestino = -30.021297;//Console.scanDouble("Bem Vindo ao Melhor Parada! Escreva a coordenada de Origem\n Come�ando pela Latitude: ");
-		double longitudeDestino = -51.107397;//Console.scanDouble("Escreva agora a Longitude: ");
-		
-		GPSCoordinate coordenadaDestino = new GPSCoordinate(latitudeDestino, longitudeDestino);
-		
-	}
+
+    public static void main(String[] args) throws FileNotFoundException {
+        Scanner scanner = new Scanner(System.in);
+        preCarregaDados = new PreCarregaDados();
+
+        preCarregaDados.starUp();
+
+        System.out.println("Partida  --------");
+        System.out.println("");
+        System.out.println("Latitude  --------");
+        String latitudePartida = scanner.nextLine(); //Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
+        // segurança do java
+
+        System.out.println("Longitude  --------");
+        String longitudePartida = scanner.nextLine();//Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
+        // segurança do java
+
+        System.out.println("DESTINO  --------");
+        System.out.println("");
+        System.out.println("Latitude  --------");
+        String latitudeDestino = scanner.nextLine();//Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
+        // segurança do java
+
+        System.out.println("Longitude  --------");
+        String longitudePDestino = scanner.nextLine();
+        //Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
+        // segurança do java
+
+//            Campos Velho
+//       -30.0940906, -51.2267142
+            //Senac POA
+//        -30.0351924, -51.2266259
+
+
+        try {
+            preCarregaDados.buscarParadasProximas(transformToKdData(latitudePartida, longitudePartida), 8);
+
+            preCarregaDados.buscarParadasProximas(transformToKdData(latitudeDestino, longitudePDestino), 8);
+        } catch (Exception e) {
+            System.err.println("Erro ao processar paradas proximas   :  " + e.getMessage());
+        }
+
+
+    }
+
+    public static KDData transformToKdData(String lat, String lonG) {
+        return new KDData(Double.valueOf(lat), Double.valueOf(lonG));
+    }
 
 }
