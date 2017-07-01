@@ -40,7 +40,7 @@ public class Principal {
 
 //            Campos Velho
 //       -30.0940906, -51.2267142
-            //Senac POA
+        //Senac POA
 //        -30.0351924, -51.2266259
 
 
@@ -55,8 +55,16 @@ public class Principal {
 
     }
 
-    public static KDData transformToKdData(String lat, String lonG) {
-        return new KDData(Double.valueOf(lat), Double.valueOf(lonG));
+    /**
+     * Metodo que transforma duas cordenadas(Latitude e Longitude) em um KDData
+     *
+     * @param latitude
+     * @param longitude
+     * @return KDData com latitude e longitude em Double
+     * @pvmeira
+     */
+    public static KDData transformToKdData(String latitude, String longitude) {
+        return new KDData(Double.valueOf(latitude), Double.valueOf(longitude));
     }
 
 }

@@ -9,35 +9,71 @@ import java.io.FileNotFoundException;
 import java.util.Map;
 
 /**
+ * Classe de Mineraçao dos Dados, obtem os dados dos arquivos .txt  presentes na pasta dat,
+ * e manipula esses dados conforme a necessidade.
+ * <p>
  * Created by pvmeira on 01/07/17.
  */
 public class PreCarregaDados {
-    private Map<String, Route> routes;
-    private Map<String, Stop> stops;
-    private Map<String, Shape> shapes;
-    private Map<String, Service> services;
-    private Map<String, Trip> trips;
+    /**
+     * Rotas : contem o nome abreviado e o nome
+     * das rotas de POA
+     */
+    private Map<String, Route> rotas;
+    /**
+     * Parada:contem nome da parada e cordenadas da mesma
+     * de toda as paradas de POA
+     */
+    private Map<String, Stop> paradas;
+    /**
+     * Forma : contem uma lista de cordenadas para ser utlilizada
+     * conforme necessidade de polignos, polilinha etc..
+     */
+    private Map<String, Shape> formas;
+    /**
+     * Servico: contem ativo/naoAtivo  e data de inicio
+     * e de fim de algum serviço nas rotas de POA
+     */
+    private Map<String, Service> servicos;
+    /**
+     * Viagem:Contem Rota, Serviço, forma, acessivel a cadiera de rodas
+     * e lita de paradas por onde essa viagem passa.
+     */
+    private Map<String, Trip> viagens;
+    /**
+     * ArvoreKdParadas:Contem um arvore no estilo KD com todas as paradas de POA
+     */
     private KDTree arvoreKdParadas;
 
-
+    /**
+     * Metodo que inicializa todas as variaveis declaradas nessa classe
+     * apartir dos arquivos armazenados na pasta data, sao esse arquivos os seguintes:
+     * -paradas.txt
+     * -rotas.txt
+     * -formas.txt
+     * -calendar.txt
+     * -viagens.txt
+     * Exeptions : FileNotFoundException <p>Caso alguma ocorra, o mesmo metodo descarta todas as alteraçoes,
+     * pois para este app, sao necessarias todas as variaveis inicializadas com dados</p>
+     */
     public void starUp() {
 
         try {
-            System.out.println("Reading stops.");
+            System.out.println("Reading paradas.");
 
-            this.stops = GTFSReader.loadStops("data/stops.txt");
-            System.out.println("Reading routes.");
+            this.paradas = GTFSReader.loadStops("data/paradas.txt");
+            System.out.println("Reading rotas.");
 
-            this.routes = GTFSReader.loadRoutes("data/routes.txt");
-            System.out.println("Reading shapes.");
+            this.rotas = GTFSReader.loadRoutes("data/rotas.txt");
+            System.out.println("Reading formas.");
 
-            this.shapes = GTFSReader.loadShapes("data/shapes.txt");
+            this.formas = GTFSReader.loadShapes("data/formas.txt");
             System.out.println("Reading calendar.");
 
-            this.services = GTFSReader.loadServices("data/calendar.txt");
-            System.out.println("Reading trips.");
+            this.servicos = GTFSReader.loadServices("data/calendar.txt");
+            System.out.println("Reading viagens.");
 
-            this.trips = GTFSReader.loadTrips("data/trips.txt", routes, services, shapes);
+            this.viagens = GTFSReader.loadTrips("data/viagens.txt", rotas, servicos, formas);
             System.out.println("Reading stop times.");
 
             System.out.println("Carregamento concluido");
@@ -48,10 +84,16 @@ public class PreCarregaDados {
 
     }
 
+    /**
+     * Cria uma arvore KD com base no Map<Paradas>, para cada parada presente no map,
+     * um novo no[StopData] e criado e adicionado ao array de paradas.Finalmente apos todos os array criados
+     * e entao criada um nova KDTree com o array de paradas<p>E utilizado KDTree.class do pacote de estruturas
+     * da bibliteca usada nesse App</p>.
+     */
     public void criarArvoreKdApartirDasParadas() {
-        KDData[] paradas = new StopData[this.stops.values().size()];
+        KDData[] paradas = new StopData[this.paradas.values().size()];
         int cont = 0;
-        for (Stop parada : this.stops.values()) {
+        for (Stop parada : this.paradas.values()) {
             paradas[cont] = new StopData(parada, parada.getGPSCoordinate().latitude, parada.getGPSCoordinate().longitude);
             cont++;
         }
@@ -59,9 +101,19 @@ public class PreCarregaDados {
         System.out.println("Arvore KD com as paradas foi criada");
     }
 
+    /**
+     * Metodo  para a busca das parada(s) mais proxima(s), utiliza a KDTree presente
+     * nessa classe<storng>Deve estar populada</storng>
+     *
+     * @param data KDData que contem Latidude e Longitude do ponto de GPS que sera usado para comparar com a arvoreKD
+     *             ja previamente populada nesta mesma classe.
+     *
+     * @param tamanhoBusca Range do numero de paradas que serao retornados pelo algoritimos presente
+     *                     no metodo <p>findKNearestPoints</p>
+     */
     public void buscarParadasProximas(KDData data, int tamanhoBusca) {
 
-
+        //TODO Fazer retorna a lista de paradas encontradas na busca do algoritimo
         KDData[] dataRetorno = new KDData[tamanhoBusca];
         arvoreKdParadas.findKNearestPoints(data, dataRetorno);
 
@@ -74,44 +126,44 @@ public class PreCarregaDados {
     }
 
 
-    public Map<String, Route> getRoutes() {
-        return routes;
+    public Map<String, Route> getRotas() {
+        return rotas;
     }
 
-    public void setRoutes(Map<String, Route> routes) {
-        this.routes = routes;
+    public void setRotas(Map<String, Route> rotas) {
+        this.rotas = rotas;
     }
 
-    public Map<String, Stop> getStops() {
-        return stops;
+    public Map<String, Stop> getParadas() {
+        return paradas;
     }
 
-    public void setStops(Map<String, Stop> stops) {
-        this.stops = stops;
+    public void setParadas(Map<String, Stop> paradas) {
+        this.paradas = paradas;
     }
 
-    public Map<String, Shape> getShapes() {
-        return shapes;
+    public Map<String, Shape> getFormas() {
+        return formas;
     }
 
-    public void setShapes(Map<String, Shape> shapes) {
-        this.shapes = shapes;
+    public void setFormas(Map<String, Shape> formas) {
+        this.formas = formas;
     }
 
-    public Map<String, Service> getServices() {
-        return services;
+    public Map<String, Service> getServicos() {
+        return servicos;
     }
 
-    public void setServices(Map<String, Service> services) {
-        this.services = services;
+    public void setServicos(Map<String, Service> servicos) {
+        this.servicos = servicos;
     }
 
-    public Map<String, Trip> getTrips() {
-        return trips;
+    public Map<String, Trip> getViagens() {
+        return viagens;
     }
 
-    public void setTrips(Map<String, Trip> trips) {
-        this.trips = trips;
+    public void setViagens(Map<String, Trip> viagens) {
+        this.viagens = viagens;
     }
 
     public KDTree getArvoreKdParadas() {
