@@ -5,7 +5,6 @@ import java.util.Scanner;
 
 import aplicacao.mineracao.PreCarregaDados;
 import datastructures.KDData;
-import util.Console;
 
 public class Principal {
 
@@ -22,22 +21,22 @@ public class Principal {
         System.out.println("");
         System.out.println("Latitude  --------");
         String latitudePartida = scanner.nextLine(); //Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
-        // seguranÃ§a do java
+        // seguran�a do java
 
         System.out.println("Longitude  --------");
         String longitudePartida = scanner.nextLine();//Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
-        // seguranÃ§a do java
+        // seguran�a do java
 
         System.out.println("DESTINO  --------");
         System.out.println("");
         System.out.println("Latitude  --------");
         String latitudeDestino = scanner.nextLine();//Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
-        // seguranÃ§a do java
+        // seguran�a do java
 
         System.out.println("Longitude  --------");
         String longitudePDestino = scanner.nextLine();
         //Nao usar console na classe UTIL , pois faz acesso indevido aos packges e estoura erro de
-        // seguranÃ§a do java
+        // seguran�a do java
 
 //            Campos Velho
 //       -30.0940906, -51.2267142
