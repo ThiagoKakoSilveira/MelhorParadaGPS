@@ -14,9 +14,9 @@ import smartcity.util.GPSCoordinate;
 import util.Console;
 
 public class Principal {
-
+	
 	public static void main(String[] args) throws FileNotFoundException {
-		
+		Menu m = new Menu();
 		Scanner scanner = new Scanner (System.in);
 		
 		System.out.println("Reading stops.");
@@ -34,17 +34,21 @@ public class Principal {
 		GTFSReader.loadStopTimes("data/stop_times.txt", trips, stops);
 		long e = System.currentTimeMillis();
 		System.out.println("\nTempo = " + ((e-s)/1000.0));
-				
+		
+		m.Menu();
+
+	}
+	public void Origem() { 
 		double latitudeOrigem = -30.150988899999994;//scanner.nextDouble();
 		double longitudeOrigem = -51.165521;//Console.scanDouble("Escreva agora a Longitude: ");//aqui está estourando o double creio eu. 
 		
 		GPSCoordinate coordenadaOrigem = new GPSCoordinate(latitudeOrigem, longitudeOrigem);
+	}
 		
+	public void Destino() {
 		double latitudeDestino = -30.021297;//Console.scanDouble("Bem Vindo ao Melhor Parada! Escreva a coordenada de Origem\n Começando pela Latitude: ");
 		double longitudeDestino = -51.107397;//Console.scanDouble("Escreva agora a Longitude: ");
 		
 		GPSCoordinate coordenadaDestino = new GPSCoordinate(latitudeDestino, longitudeDestino);
-		
 	}
-
 }
