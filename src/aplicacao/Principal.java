@@ -2,6 +2,7 @@ package aplicacao;
 
 import java.io.FileNotFoundException;
 import java.util.Map;
+import java.util.Scanner;
 
 import smartcity.gtfs.GTFSReader;
 import smartcity.gtfs.Route;
@@ -15,6 +16,8 @@ import util.Console;
 public class Principal {
 
 	public static void main(String[] args) throws FileNotFoundException {
+		
+		Scanner scanner = new Scanner (System.in);
 		
 		System.out.println("Reading stops.");
 		Map<String,Stop> stops = GTFSReader.loadStops("data/stops.txt");
@@ -32,13 +35,15 @@ public class Principal {
 		long e = System.currentTimeMillis();
 		System.out.println("\nTempo = " + ((e-s)/1000.0));
 				
-		double latitudeOrigem = Console.scanDouble("Bem Vindo ao Melhor Parada! Escreva a coordenada de Origem\n Começando pela Latitude: ");
-		double longitudeOrigem = Console.scanDouble("Escreva agora a Longitude: ");//aqui está estourando o double creio eu. 
+		double latitudeOrigem = -30.150988899999994;//scanner.nextDouble();
+		double longitudeOrigem = -51.165521;//Console.scanDouble("Escreva agora a Longitude: ");//aqui está estourando o double creio eu. 
 		
 		GPSCoordinate coordenadaOrigem = new GPSCoordinate(latitudeOrigem, longitudeOrigem);
 		
-		double latitudeDestino = Console.scanDouble("Bem Vindo ao Melhor Parada! Escreva a coordenada de Origem\n Começando pela Latitude: ");
-		double longitudeDestino = Console.scanDouble("Escreva agora a Longitude: ");
+		double latitudeDestino = -30.021297;//Console.scanDouble("Bem Vindo ao Melhor Parada! Escreva a coordenada de Origem\n Começando pela Latitude: ");
+		double longitudeDestino = -51.107397;//Console.scanDouble("Escreva agora a Longitude: ");
+		
+		GPSCoordinate coordenadaDestino = new GPSCoordinate(latitudeDestino, longitudeDestino);
 		
 	}
 
