@@ -21,37 +21,37 @@ public class Principal {
 
         preCarregaDados.starUp();
 
-        System.out.println("Partida  --------");
-        System.out.println("");
-        System.out.println("Latitude  --------");
-        String latitudePartida = scanner.nextLine();
+        System.out.println("Dados da Partida ");
+        System.out.println("Latitude , Longitude");
+        String latitudeLongitude = scanner.nextLine();
+        String[] splitPartida = latitudeLongitude.split(",");
 
-        System.out.println("Longitude  --------");
-        String longitudePartida = scanner.nextLine();
-
-        System.out.println("DESTINO  --------");
-        System.out.println("");
-        System.out.println("Latitude  --------");
-        String latitudeDestino = scanner.nextLine();
-
-        System.out.println("Longitude  --------");
-        String longitudePDestino = scanner.nextLine();
+        System.out.println("Dados do Destino ");
+        System.out.println("Latitude , Longitude");
+        String dadosDestino = scanner.nextLine();
+        String[] splitDestino = dadosDestino.split(",");
 
 /*        Campos Velho
        -30.0940906, -51.2267142
+
           Senac POA
         -30.0351924, -51.2266259
+
+        //perto casa(Nutripao)
+        -30.0937542,-51.230038
+
+        //PUC
+        -30.0570755,-51.1741819
 */
 
         try {
-            List<Stop> stopListPartida = preCarregaDados.buscarParadasProximas(new KDData(-30.0940906, -51.2267142), 8);
+            List<Stop> stopListPartida = preCarregaDados.buscarParadasProximas(transformToKdData(splitPartida[0], splitPartida[1]), 15);
             Map<String, List<TripCustom>> mapViagensParadaPartida = preCarregaDados.obtemViagensDeParadas(stopListPartida);
-//            -30.0915726,-51.2208331
             System.out.println();
-            List<Stop> stopListDestino = preCarregaDados.buscarParadasProximas(new KDData(-30.0410407, -51.071493), 8);
+            List<Stop> stopListDestino = preCarregaDados.buscarParadasProximas(transformToKdData(splitDestino[0], splitDestino[1]), 15);
             Map<String, List<TripCustom>> mapViagensParadaDestino = preCarregaDados.obtemViagensDeParadas(stopListDestino);
 
-            List<String> strings = preCarregaDados.obterListaDeChavesIguais(mapViagensParadaPartida, mapViagensParadaDestino);
+            List<String> strings = preCarregaDados.obtemListaDeOnibusCompartilhados(mapViagensParadaPartida, mapViagensParadaDestino);
             if (strings.size() > 0) {
                 System.out.println("__________________________________________________");
                 System.out.println("Lista de onibus possiveis para ir ate seu destino");
