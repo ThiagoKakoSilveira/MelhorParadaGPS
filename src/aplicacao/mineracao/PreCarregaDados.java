@@ -12,52 +12,52 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Classe de MineraÃ§ao dos Dados, obtem os dados dos arquivos .txt  presentes na pasta dat,
+ * Classe de Mineração dos Dados, obtém os dados dos arquivos .txt  presentes na pasta dat,
  * e manipula esses dados conforme a necessidade.
  * <p>
  * Created by pvmeira on 01/07/17.
  */
 public class PreCarregaDados {
     /**
-     * Rotas : contem o nome abreviado e o nome
+     * Rotas : contém o nome abreviado e o nome
      * das rotas de POA
      */
     private Map<String, Route> rotas;
     /**
-     * Parada:contem nome da parada e cordenadas da mesma
+     * Parada:contém nome da parada e cordenadas da mesma
      * de toda as paradas de POA
      */
     private Map<String, Stop> paradas;
     /**
-     * Forma : contem uma lista de cordenadas para ser utlilizada
+     * Forma : contém uma lista de cordenadas para ser utlilizada
      * conforme necessidade de polignos, polilinha etc..
      */
     private Map<String, Shape> formas;
     /**
-     * Servico: contem ativo/naoAtivo  e data de inicio
-     * e de fim de algum serviï¿½o nas rotas de POA
+     * Servico: contém ativo/nãoAtivo  e data de início
+     * e de fim de algum serviços nas rotas de POA
      */
     private Map<String, Service> servicos;
     /**
-     * Viagem:Contem Rota, Serviï¿½o, forma, acessivel a cadeiras de rodas
+     * Viagem:Contem Rota, Serviço, forma, acessível a cadeiras de rodas
      * e lista de paradas por onde essa viagem passa.
      */
     private Map<String, TripCustom> viagens;
     /**
-     * ArvoreKdParadas:Contem um arvore no estilo KD com todas as paradas de POA
+     * ArvoreKdParadas:Contem um árvore no estilo KD com todas as paradas de POA
      */
     private KDTree arvoreKdParadas;
 
     /**
-     * Metodo que inicializa todas as variï¿½veis declaradas nessa classe
-     * apartir dos arquivos armazenados na pasta data, sï¿½o esses arquivos os seguintes:
+     * Metodo que inicializa todas as variáveis declaradas nessa classe
+     * apartir dos arquivos armazenados na pasta data, serão esses arquivos os seguintes:
      * -paradas.txt
      * -rotas.txt
      * -formas.txt
      * -calendar.txt
      * -viagens.txt
-     * Exeptions : FileNotFoundException <p>Caso alguma ocorra, o mesmo mï¿½todo descarta todas as alteraï¿½ï¿½es,
-     * pois para este app, sao necessï¿½rias todas as variï¿½veis inicializadas com dados</p>
+     * Exeptions : FileNotFoundException <p>Caso alguma ocorra, o mesmo método descarta todas as alterações,
+     * pois para este app, sao necessárias todas as variáveis inicializadas com dados</p>
      */
     public void starUp() {
 
@@ -76,7 +76,7 @@ public class PreCarregaDados {
             this.carregarTempoParadas("data/stop_times.txt");
 
 
-            System.out.println("Carregamento concluï¿½do");
+            System.out.println("Carregamento concluído");
             System.out.println("Criando ArvoreKD com base nas paradas lidas acima .");
             this.criarArvoreKdApartirDasParadas();
         } catch (FileNotFoundException e) {
@@ -86,7 +86,7 @@ public class PreCarregaDados {
     }
 
     /**
-     * Cria uma arvore KD com base no Map<Paradas>, para cada parada presente no map,
+     * Cria uma árvore KD com base no Map<Paradas>, para cada parada presente no map,
      * um novo no[StopData] e criado e adicionado ao array de paradas.Finalmente apï¿½s todos os array criados
      * e entï¿½o criada um nova KDTree com o array de paradas<p>ï¿½ utilizado KDTree.class do pacote de estruturas
      * da bibliteca usada nesse App</p>.
@@ -99,7 +99,7 @@ public class PreCarregaDados {
             cont++;
         }
         this.arvoreKdParadas = new KDTree(paradas);
-        System.out.println("ï¿½rvore KD com as paradas foi criada");
+        System.out.println("árvore KD com as paradas foi criada");
     }
 
     /**
