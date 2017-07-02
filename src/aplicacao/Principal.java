@@ -45,20 +45,20 @@ public class Principal {
 */
 
         try {
-            List<Stop> stopListPartida = preCarregaDados.buscarParadasProximas(transformToKdData(splitPartida[0], splitPartida[1]), 15);
+            List<Stop> stopListPartida = preCarregaDados.buscarParadasProximas(transformToKdData(splitPartida[0], splitPartida[1]), 5);
             Map<String, List<TripCustom>> mapViagensParadaPartida = preCarregaDados.obtemViagensDeParadas(stopListPartida);
             System.out.println();
-            List<Stop> stopListDestino = preCarregaDados.buscarParadasProximas(transformToKdData(splitDestino[0], splitDestino[1]), 15);
+            List<Stop> stopListDestino = preCarregaDados.buscarParadasProximas(transformToKdData(splitDestino[0], splitDestino[1]), 5);
             Map<String, List<TripCustom>> mapViagensParadaDestino = preCarregaDados.obtemViagensDeParadas(stopListDestino);
 
             List<String> strings = preCarregaDados.obtemListaDeOnibusCompartilhados(mapViagensParadaPartida, mapViagensParadaDestino);
             if (strings.size() > 0) {
                 System.out.println("__________________________________________________");
-                System.out.println("Lista de ônibus possíveis para ir ate seu destino");
+                System.out.println("Lista de ônibus possíveis para ir até seu destino");
                 strings.stream().forEach(System.out::println);
                 System.out.println("__________________________________________________");
             } else {
-                //TODO Criar algoritimo para identifiicar os onibus(mais de um);
+                //TODO Criar algoritimo para identifiicar os ônibus(mais de um);
                 System.out.println("__________________________________________________");
                 System.out.println("Necessário Pegar dois ônibus");
                 System.out.println("__________________________________________________");
