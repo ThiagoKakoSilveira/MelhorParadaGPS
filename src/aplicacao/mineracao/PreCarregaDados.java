@@ -1,12 +1,15 @@
 package aplicacao.mineracao;
 
 import aplicacao.data.StopData;
+import aplicacao.data.TripCustom;
 import datastructures.KDData;
 import datastructures.KDTree;
 import smartcity.gtfs.*;
+import smartcity.util.CSVReader;
 
 import java.io.FileNotFoundException;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Classe de MineraÃ§ao dos Dados, obtem os dados dos arquivos .txt  presentes na pasta dat,
@@ -39,7 +42,7 @@ public class PreCarregaDados {
      * Viagem:Contem Rota, Serviço, forma, acessivel a cadeiras de rodas
      * e lista de paradas por onde essa viagem passa.
      */
-    private Map<String, Trip> viagens;
+    private Map<String, TripCustom> viagens;
     /**
      * ArvoreKdParadas:Contem um arvore no estilo KD com todas as paradas de POA
      */
@@ -69,7 +72,8 @@ public class PreCarregaDados {
 
             this.servicos = GTFSReader.loadServices("data/calendar.txt");
 
-            this.viagens = GTFSReader.loadTrips("data/trips.txt", rotas, servicos, formas);
+            this.viagens = this.loadTrips("data/trips.txt");
+            this.loadStopTimes("data/stop_times.txt");
 
 
             System.out.println("Carregamento concluído");
@@ -107,7 +111,7 @@ public class PreCarregaDados {
      * @param tamanhoBusca Range do número de paradas que serão retornados pelo algoritimos presente
      *                     no método <p>findKNearestPoints</p>
      */
-    public void buscarParadasProximas(KDData data, int tamanhoBusca) {
+    public List<Stop> buscarParadasProximas(KDData data, int tamanhoBusca) {
 
         //TODO Fazer retorna a lista de paradas encontradas na busca do algoritimo
         KDData[] dataRetorno = new KDData[tamanhoBusca];
@@ -119,8 +123,106 @@ public class PreCarregaDados {
         for (KDData n : dataRetorno) {
             System.out.print(n + " \n");
         }
+        List<Stop> paradasProximas = new ArrayList<>();
+        for (int i = 0; i < dataRetorno.length; i++) {
+            paradasProximas.add(((StopData) dataRetorno[i]).getParada());
+        }
+        return paradasProximas;
     }
 
+    public Map<String, List<TripCustom>> obtemViagensDeParadas(List<Stop> stopList) {
+        Map<String, List<TripCustom>> viagensDaParada = new HashMap<>();
+        stopList.stream().forEach(stop -> {
+            List<TripCustom> collect = new ArrayList<>();
+            this.viagens.values().stream().forEach(trip -> {
+                List<Stop> stops = trip.getStops();
+                stops.stream().forEach(stop1 -> {
+                    if (stop1.getId().equalsIgnoreCase(stop.getId())) {
+                        collect.add(trip);
+                    }
+                });
+
+            });
+            viagensDaParada.put(stop.getId(), collect);
+        });
+        return viagensDaParada;
+    }
+
+    public Map<String, TripCustom> loadTrips(String filename) throws FileNotFoundException {
+        Map<String, TripCustom> trips = new HashMap<>();
+        CSVReader reader = new CSVReader(filename, ",");
+        while (reader.hasNext()) {
+            // read route id
+            String route_id = reader.next();
+            // read service id
+            String service_id = reader.next();
+            // read this trip id
+            String id = reader.next();
+            // ignore headsign, short_name
+            reader.skipNext(2);
+            // read direction id
+            int dir = reader.nextInt();
+            // ignore block_id
+            reader.skipNext();
+            // read shape_id
+            String shape_id = reader.next();
+            // read wheelchair support
+            boolean w = (reader.nextInt() == 1);
+            // ignore extra fields
+            for (int i = 9; i < reader.getRecordSize(); i++)
+                reader.skipNext();
+
+            Route r = rotas.get(route_id);
+            Service s = servicos.get(service_id);
+            Shape sh = formas.get(shape_id);
+
+            trips.put(id, new TripCustom(id, r, s, sh, dir, w));
+        }
+        return trips;
+    }
+
+    public void loadStopTimes(String filename) throws FileNotFoundException {
+        CSVReader reader = new CSVReader(filename, ",");
+        String lastTripId = null;
+        TripCustom lastTrip = null;
+        while (reader.hasNext()) {
+            // read trip id
+            String trip_id = reader.next();
+            // ignore arrival and departure time
+            reader.skipNext(2);
+            // read stop id
+            String stop_id = reader.next();
+            // ignore stop_sequence
+            reader.skipNext();
+            if (lastTrip == null || !trip_id.equals(lastTripId)) {
+                TripCustom trip = viagens.get(trip_id);
+                lastTrip = trip;
+            }
+            Stop stop = paradas.get(stop_id);
+            lastTrip.addStop(stop);
+        }
+    }
+
+    public List<String> obterListaDeChavesIguais(Map<String, List<TripCustom>> mapPartida, Map<String, List<TripCustom>> mapDestino) {
+        List<String> ret = new ArrayList<>();
+        mapDestino.values().stream().forEach(list -> {
+            for (int i = 0; i < list.size(); i++) {
+                String idViagemDestino = list.get(i).getId();
+                mapPartida.values().stream().forEach(a -> {
+                    for (int j = 0; j <a.size(); j++) {
+                        if(a.get(j).getId().equalsIgnoreCase(idViagemDestino)){
+
+                            ret.add(a.get(j).getRoute().getShortName());
+
+                        }
+
+                    }
+                });
+            }
+        });
+
+        return ret.stream().distinct().collect(Collectors.toList());
+    }
 
     public Map<String, Route> getRotas() {
         return rotas;
@@ -154,11 +256,11 @@ public class PreCarregaDados {
         this.servicos = servicos;
     }
 
-    public Map<String, Trip> getViagens() {
+    public Map<String, TripCustom> getViagens() {
         return viagens;
     }
 
-    public void setViagens(Map<String, Trip> viagens) {
+    public void setViagens(Map<String, TripCustom> viagens) {
         this.viagens = viagens;
     }
 

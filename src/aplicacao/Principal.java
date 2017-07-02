@@ -1,10 +1,14 @@
 package aplicacao;
 
 import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
+import aplicacao.data.TripCustom;
 import aplicacao.mineracao.PreCarregaDados;
 import datastructures.KDData;
+import smartcity.gtfs.Stop;
 
 public class Principal {
 
@@ -20,7 +24,7 @@ public class Principal {
         System.out.println("Partida  --------");
         System.out.println("");
         System.out.println("Latitude  --------");
-        String latitudePartida = scanner.nextLine(); 
+        String latitudePartida = scanner.nextLine();
 
         System.out.println("Longitude  --------");
         String longitudePartida = scanner.nextLine();
@@ -32,7 +36,7 @@ public class Principal {
 
         System.out.println("Longitude  --------");
         String longitudePDestino = scanner.nextLine();
-        
+
 /*        Campos Velho
        -30.0940906, -51.2267142
           Senac POA
@@ -40,13 +44,30 @@ public class Principal {
 */
 
         try {
-            preCarregaDados.buscarParadasProximas(transformToKdData(latitudePartida, longitudePartida), 8);
+            List<Stop> stopListPartida = preCarregaDados.buscarParadasProximas(new KDData(-30.0940906, -51.2267142), 8);
+            Map<String, List<TripCustom>> mapViagensParadaPartida = preCarregaDados.obtemViagensDeParadas(stopListPartida);
+//            -30.0915726,-51.2208331
+            System.out.println();
+            List<Stop> stopListDestino = preCarregaDados.buscarParadasProximas(new KDData(-30.0410407, -51.071493), 8);
+            Map<String, List<TripCustom>> mapViagensParadaDestino = preCarregaDados.obtemViagensDeParadas(stopListDestino);
 
-            preCarregaDados.buscarParadasProximas(transformToKdData(latitudeDestino, longitudePDestino), 8);
+            List<String> strings = preCarregaDados.obterListaDeChavesIguais(mapViagensParadaPartida, mapViagensParadaDestino);
+            if (strings.size() > 0) {
+                System.out.println("__________________________________________________");
+                System.out.println("Lista de onibus possiveis para ir ate seu destino");
+                strings.stream().forEach(System.out::println);
+                System.out.println("__________________________________________________");
+            } else {
+                //TODO Criar algoritimo para identifiicar os onibus(mais de um);
+                System.out.println("__________________________________________________");
+                System.out.println("Necessario Pegar dois onibus");
+                System.out.println("__________________________________________________");
+            }
+
         } catch (Exception e) {
             System.err.println("Erro ao processar paradas proximas   :  " + e.getMessage());
         }
-        
+
         scanner.close();
 
     }
