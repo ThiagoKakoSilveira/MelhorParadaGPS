@@ -12,52 +12,52 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Classe de Mineraçao dos Dados, obtem os dados dos arquivos .txt  presentes na pasta dat,
+ * Classe de Mineração dos Dados, obtem os dados dos arquivos .txt  presentes na pasta dat,
  * e manipula esses dados conforme a necessidade.
  * <p>
  * Created by pvmeira on 01/07/17.
  */
 public class PreCarregaDados {
     /**
-     * Rotas : contem o nome abreviado e o nome
+     * Rotas : contém o nome abreviado e o nome
      * das rotas de POA
      */
     private Map<String, Route> rotas;
     /**
-     * Parada:contem nome da parada e cordenadas da mesma
+     * Parada:contém nome da parada e cordenadas da mesma
      * de toda as paradas de POA
      */
     private Map<String, Stop> paradas;
     /**
-     * Forma : contem uma lista de cordenadas para ser utlilizada
+     * Forma : contém uma lista de cordenadas para ser utlilizada
      * conforme necessidade de polignos, polilinha etc..
      */
     private Map<String, Shape> formas;
     /**
-     * Servico: contem ativo/naoAtivo  e data de inicio
-     * e de fim de algum servi�o nas rotas de POA
+     * Servico: contém ativo/nãoAtivo  e data de inicio
+     * e de fim de algum serviço nas rotas de POA
      */
     private Map<String, Service> servicos;
     /**
-     * Viagem:Contem Rota, Servi�o, forma, acessivel a cadeiras de rodas
+     * Viagem:Contém Rota, Serviço, forma, acessivel a cadeiras de rodas
      * e lista de paradas por onde essa viagem passa.
      */
     private Map<String, TripCustom> viagens;
     /**
-     * ArvoreKdParadas:Contem um arvore no estilo KD com todas as paradas de POA
+     * ArvoreKdParadas:Contém um árvore no estilo KD com todas as paradas de POA
      */
     private KDTree arvoreKdParadas;
 
     /**
-     * Metodo que inicializa todas as vari�veis declaradas nessa classe
-     * apartir dos arquivos armazenados na pasta data, s�o esses arquivos os seguintes:
+     * Método que inicializa todas as variáveis declaradas nessa classe
+     * apartir dos arquivos armazenados na pasta data, são esses arquivos os seguintes:
      * -paradas.txt
      * -rotas.txt
      * -formas.txt
      * -calendar.txt
      * -viagens.txt
-     * Exeptions : FileNotFoundException <p>Caso alguma ocorra, o mesmo m�todo descarta todas as altera��es,
-     * pois para este app, sao necess�rias todas as vari�veis inicializadas com dados</p>
+     * Exeptions : FileNotFoundException <p>Caso alguma ocorra, o mesmo método descarta todas as alterações,
+     * pois para este app, sao necessárias todas as variáveis inicializadas com dados</p>
      */
     public void starUp() {
 
@@ -76,7 +76,7 @@ public class PreCarregaDados {
             this.carregarTempoParadas("data/stop_times.txt");
 
 
-            System.out.println("Carregamento conclu�do");
+            System.out.println("Carregamento concluído");
             System.out.println("Criando ArvoreKD com base nas paradas lidas acima .");
             this.criarArvoreKdApartirDasParadas();
         } catch (FileNotFoundException e) {
@@ -86,9 +86,9 @@ public class PreCarregaDados {
     }
 
     /**
-     * Cria uma arvore KD com base no Map<Paradas>, para cada parada presente no map,
-     * um novo no[StopData] e criado e adicionado ao array de paradas.Finalmente ap�s todos os array criados
-     * e ent�o criada um nova KDTree com o array de paradas<p>� utilizado KDTree.class do pacote de estruturas
+     * Cria uma árvore KD com base no Map<Paradas>, para cada parada presente no map,
+     * um novo no[StopData] e criado e adicionado ao array de paradas.Finalmente após todos os array criados
+     * e então criada um nova KDTree com o array de paradas<p> utilizado KDTree.class do pacote de estruturas
      * da bibliteca usada nesse App</p>.
      */
     public void criarArvoreKdApartirDasParadas() {
@@ -99,17 +99,17 @@ public class PreCarregaDados {
             cont++;
         }
         this.arvoreKdParadas = new KDTree(paradas);
-        System.out.println("�rvore KD com as paradas foi criada");
+        System.out.println("árvore KD com as paradas foi criada");
     }
 
     /**
-     * M�todo  para a busca das parada(s) mais pr�xima(s), utiliza a KDTree presente
+     * Método  para a busca das parada(s) mais próxima(s), utiliza a KDTree presente
      * nessa classe<storng>Deve estar populada</storng>
      *
-     * @param data         KDData que cont�m Latidude e Longitude do ponto de GPS que ser� usado para comparar com a �rvoreKD
-     *                     j� previamente populada nesta mesma classe.
-     * @param tamanhoBusca Range do n�mero de paradas que ser�o retornados pelo algoritimos presente
-     *                     no m�todo <p>findKNearestPoints</p>
+     * @param data         KDData que contém Latidude e Longitude do ponto de GPS que será usado para comparar com a árvoreKD
+     *                     já previamente populada nesta mesma classe.
+     * @param tamanhoBusca Range do número de paradas que serão retornados pelo algoritimos presente
+     *                     no método <p>findKNearestPoints</p>
      */
     public List<Stop> buscarParadasProximas(KDData data, int tamanhoBusca) {
 
@@ -118,7 +118,7 @@ public class PreCarregaDados {
         arvoreKdParadas.findKNearestPoints(data, dataRetorno);
 
         System.out.println("Parada Mais Perto: " + ((StopData) dataRetorno[0]).getParada());
-        System.out.println("Dist�ncia: " + dataRetorno[0].distance(data));
+        System.out.println("Distância: " + dataRetorno[0].distance(data));
         System.out.println("------");
         for (KDData n : dataRetorno) {
             System.out.print(n + " \n");
@@ -131,7 +131,7 @@ public class PreCarregaDados {
     }
 
     /**
-     * Metodo que recebe uma lista de paradas e para cada parada, busca todas as
+     * Método que recebe uma lista de paradas e para cada parada, busca todas as
      * viagens que passam por aquela parada e armazena em uma <p> MAP<idParada,ListaDeViagensN> </p>
      *
      * @param listaDeParadas proximas a cordenada
@@ -156,11 +156,11 @@ public class PreCarregaDados {
     }
 
     /**
-     * Carrega todas as viagens de Porto Alegre que estao contidas no arquivo passado
+     * Carrega todas as viagens de Porto Alegre que estão contidas no arquivo passado
      *
      * @param nomeArquivo local onde esta armazenado o arquivo contenso as Viagens
      * @return <p>Map<IdViagem,ViagemCustom> </p>  contendo todas as viagens que existem no arquivo
-     * @throws FileNotFoundException quando o nomeArquivo for invalido
+     * @throws FileNotFoundException quando o nomeArquivo for inválido
      */
     public Map<String, TripCustom> carregarViagens(String nomeArquivo) throws FileNotFoundException {
         Map<String, TripCustom> viagens = new HashMap<>();
@@ -197,10 +197,10 @@ public class PreCarregaDados {
 
 
     /**
-     * Metodo que adiciona todas as paradas que pertence as viagens
+     * Método que adiciona todas as paradas que pertence as viagens
      *
      * @param nomeArquivo local onde esta armazenado o arquivo contenso as Viagens
-     * @throws FileNotFoundException quando o nomeArquivo for invalido
+     * @throws FileNotFoundException quando o nomeArquivo for inválido
      */
     public void carregarTempoParadas(String nomeArquivo) throws FileNotFoundException {
         CSVReader leitor = new CSVReader(nomeArquivo, ",");
@@ -226,16 +226,16 @@ public class PreCarregaDados {
 
 
     /**
-     * Metodo que obtem a lista de onibus em comum entre o Destino e o ponto de Partida
-     * 1ºPasso - Obtem lista de Viagens do Destino
-     * 2ºPara cada Viagens da lista de Viagens do Destino obtem idViagemDestino em questao
-     * 3ºPara cada Viagem da Lista de Viagens da Partida obtem o idViagemPartida
+     * Método que obtém a lista de ônibus em comum entre o Destino e o ponto de Partida
+     * 1ºPasso - Obtém lista de Viagens do Destino
+     * 2ºPara cada Viagens da lista de Viagens do Destino obtém idViagemDestino em questao
+     * 3ºPara cada Viagem da Lista de Viagens da Partida obtém o idViagemPartida
      * 4ºCompara os dois IDs (idViagemDestino , idViagemPartida)
      * 5ºSe for igual adiciona a listaDeOnibusParaDestino.
      *
-     * @param mapaPartida Map<IdParada,List<TripCustom> listDeViagensDaParada> contem lista de viagens das paradas de Partida
-     * @param mapaDestino Map<IdParada,List<TripCustom> listDeViagensDaParada> contem lista de viagens das paradas de Destino
-     * @return Lista contendo o nome completo do onibus / o nome abreviado do onibus
+     * @param mapaPartida Map<IdParada,List<TripCustom> listDeViagensDaParada> contém lista de viagens das paradas de Partida
+     * @param mapaDestino Map<IdParada,List<TripCustom> listDeViagensDaParada> contém lista de viagens das paradas de Destino
+     * @return Lista contendo o nome completo do ônibus / o nome abreviado do ônibus
      */
     public List<String> obtemListaDeOnibusCompartilhados(Map<String, List<TripCustom>> mapaPartida, Map<String, List<TripCustom>> mapaDestino) {
         List<String> listaDeOnibusParaDestino = new ArrayList<>();

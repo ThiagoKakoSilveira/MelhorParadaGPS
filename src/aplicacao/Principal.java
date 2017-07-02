@@ -54,18 +54,18 @@ public class Principal {
             List<String> strings = preCarregaDados.obtemListaDeOnibusCompartilhados(mapViagensParadaPartida, mapViagensParadaDestino);
             if (strings.size() > 0) {
                 System.out.println("__________________________________________________");
-                System.out.println("Lista de onibus possiveis para ir ate seu destino");
+                System.out.println("Lista de ônibus possíveis para ir ate seu destino");
                 strings.stream().forEach(System.out::println);
                 System.out.println("__________________________________________________");
             } else {
                 //TODO Criar algoritimo para identifiicar os onibus(mais de um);
                 System.out.println("__________________________________________________");
-                System.out.println("Necessario Pegar dois onibus");
+                System.out.println("Necessário Pegar dois ônibus");
                 System.out.println("__________________________________________________");
             }
 
         } catch (Exception e) {
-            System.err.println("Erro ao processar paradas proximas   :  " + e.getMessage());
+            System.err.println("Erro ao processar paradas próximas   :  " + e.getMessage());
         }
 
         scanner.close();
@@ -73,7 +73,7 @@ public class Principal {
     }
 
     /**
-     * Metodo que transforma duas cordenadas(Latitude e Longitude) em um KDData
+     * Método que transforma duas cordenadas(Latitude e Longitude) em um KDData
      *
      * @param latitude
      * @param longitude
