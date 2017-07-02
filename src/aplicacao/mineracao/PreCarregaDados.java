@@ -1,12 +1,15 @@
 package aplicacao.mineracao;
 
 import aplicacao.data.StopData;
+import aplicacao.data.TripCustom;
 import datastructures.KDData;
 import datastructures.KDTree;
 import smartcity.gtfs.*;
+import smartcity.util.CSVReader;
 
 import java.io.FileNotFoundException;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Classe de Mineraçao dos Dados, obtem os dados dos arquivos .txt  presentes na pasta dat,
@@ -32,29 +35,29 @@ public class PreCarregaDados {
     private Map<String, Shape> formas;
     /**
      * Servico: contem ativo/naoAtivo  e data de inicio
-     * e de fim de algum serviço nas rotas de POA
+     * e de fim de algum servi�o nas rotas de POA
      */
     private Map<String, Service> servicos;
     /**
-     * Viagem:Contem Rota, Serviço, forma, acessivel a cadiera de rodas
-     * e lita de paradas por onde essa viagem passa.
+     * Viagem:Contem Rota, Servi�o, forma, acessivel a cadeiras de rodas
+     * e lista de paradas por onde essa viagem passa.
      */
-    private Map<String, Trip> viagens;
+    private Map<String, TripCustom> viagens;
     /**
      * ArvoreKdParadas:Contem um arvore no estilo KD com todas as paradas de POA
      */
     private KDTree arvoreKdParadas;
 
     /**
-     * Metodo que inicializa todas as variaveis declaradas nessa classe
-     * apartir dos arquivos armazenados na pasta data, sao esse arquivos os seguintes:
+     * Metodo que inicializa todas as vari�veis declaradas nessa classe
+     * apartir dos arquivos armazenados na pasta data, s�o esses arquivos os seguintes:
      * -paradas.txt
      * -rotas.txt
      * -formas.txt
      * -calendar.txt
      * -viagens.txt
-     * Exeptions : FileNotFoundException <p>Caso alguma ocorra, o mesmo metodo descarta todas as alteraçoes,
-     * pois para este app, sao necessarias todas as variaveis inicializadas com dados</p>
+     * Exeptions : FileNotFoundException <p>Caso alguma ocorra, o mesmo m�todo descarta todas as altera��es,
+     * pois para este app, sao necess�rias todas as vari�veis inicializadas com dados</p>
      */
     public void starUp() {
 
@@ -69,10 +72,11 @@ public class PreCarregaDados {
 
             this.servicos = GTFSReader.loadServices("data/calendar.txt");
 
-            this.viagens = GTFSReader.loadTrips("data/trips.txt", rotas, servicos, formas);
+            this.viagens = this.carregarViagens("data/trips.txt");
+            this.carregarTempoParadas("data/stop_times.txt");
 
 
-            System.out.println("Carregamento concluido");
+            System.out.println("Carregamento conclu�do");
             System.out.println("Criando ArvoreKD com base nas paradas lidas acima .");
             this.criarArvoreKdApartirDasParadas();
         } catch (FileNotFoundException e) {
@@ -83,8 +87,8 @@ public class PreCarregaDados {
 
     /**
      * Cria uma arvore KD com base no Map<Paradas>, para cada parada presente no map,
-     * um novo no[StopData] e criado e adicionado ao array de paradas.Finalmente apos todos os array criados
-     * e entao criada um nova KDTree com o array de paradas<p>E utilizado KDTree.class do pacote de estruturas
+     * um novo no[StopData] e criado e adicionado ao array de paradas.Finalmente ap�s todos os array criados
+     * e ent�o criada um nova KDTree com o array de paradas<p>� utilizado KDTree.class do pacote de estruturas
      * da bibliteca usada nesse App</p>.
      */
     public void criarArvoreKdApartirDasParadas() {
@@ -95,78 +99,170 @@ public class PreCarregaDados {
             cont++;
         }
         this.arvoreKdParadas = new KDTree(paradas);
-        System.out.println("Arvore KD com as paradas foi criada");
+        System.out.println("�rvore KD com as paradas foi criada");
     }
 
     /**
-     * Metodo  para a busca das parada(s) mais proxima(s), utiliza a KDTree presente
+     * M�todo  para a busca das parada(s) mais pr�xima(s), utiliza a KDTree presente
      * nessa classe<storng>Deve estar populada</storng>
      *
-     * @param data         KDData que contem Latidude e Longitude do ponto de GPS que sera usado para comparar com a arvoreKD
-     *                     ja previamente populada nesta mesma classe.
-     * @param tamanhoBusca Range do numero de paradas que serao retornados pelo algoritimos presente
-     *                     no metodo <p>findKNearestPoints</p>
+     * @param data         KDData que cont�m Latidude e Longitude do ponto de GPS que ser� usado para comparar com a �rvoreKD
+     *                     j� previamente populada nesta mesma classe.
+     * @param tamanhoBusca Range do n�mero de paradas que ser�o retornados pelo algoritimos presente
+     *                     no m�todo <p>findKNearestPoints</p>
      */
-    public void buscarParadasProximas(KDData data, int tamanhoBusca) {
+    public List<Stop> buscarParadasProximas(KDData data, int tamanhoBusca) {
 
         //TODO Fazer retorna a lista de paradas encontradas na busca do algoritimo
         KDData[] dataRetorno = new KDData[tamanhoBusca];
         arvoreKdParadas.findKNearestPoints(data, dataRetorno);
 
         System.out.println("Parada Mais Perto: " + ((StopData) dataRetorno[0]).getParada());
-        System.out.println("Distance: " + dataRetorno[0].distance(data));
+        System.out.println("Dist�ncia: " + dataRetorno[0].distance(data));
         System.out.println("------");
         for (KDData n : dataRetorno) {
             System.out.print(n + " \n");
         }
+        List<Stop> paradasProximas = new ArrayList<>();
+        for (int i = 0; i < dataRetorno.length; i++) {
+            paradasProximas.add(((StopData) dataRetorno[i]).getParada());
+        }
+        return paradasProximas;
     }
 
+    /**
+     * Metodo que recebe uma lista de paradas e para cada parada, busca todas as
+     * viagens que passam por aquela parada e armazena em uma <p> MAP<idParada,ListaDeViagensN> </p>
+     *
+     * @param listaDeParadas proximas a cordenada
+     * @return Lista de Viagens para cada parada
+     */
+    public Map<String, List<TripCustom>> obtemViagensDeParadas(List<Stop> listaDeParadas) {
+        Map<String, List<TripCustom>> viagensDaParada = new HashMap<>();
+        listaDeParadas.stream().forEach(parada -> {
+            List<TripCustom> listaDeViagens = new ArrayList<>();
+            this.viagens.values().stream().forEach(viagem -> {
+                List<Stop> paradas = viagem.getStops();
+                paradas.stream().forEach(paradaViagemAtual -> {
+                    if (paradaViagemAtual.getId().equalsIgnoreCase(parada.getId())) {
+                        listaDeViagens.add(viagem);
+                    }
+                });
 
-    public Map<String, Route> getRotas() {
-        return rotas;
+            });
+            viagensDaParada.put(parada.getId(), listaDeViagens);
+        });
+        return viagensDaParada;
     }
 
-    public void setRotas(Map<String, Route> rotas) {
-        this.rotas = rotas;
-    }
+    /**
+     * Carrega todas as viagens de Porto Alegre que estao contidas no arquivo passado
+     *
+     * @param nomeArquivo local onde esta armazenado o arquivo contenso as Viagens
+     * @return <p>Map<IdViagem,ViagemCustom> </p>  contendo todas as viagens que existem no arquivo
+     * @throws FileNotFoundException quando o nomeArquivo for invalido
+     */
+    public Map<String, TripCustom> carregarViagens(String nomeArquivo) throws FileNotFoundException {
+        Map<String, TripCustom> viagens = new HashMap<>();
+        CSVReader leitor = new CSVReader(nomeArquivo, ",");
+        while (leitor.hasNext()) {
+            // read route id
+            String route_id = leitor.next();
+            // read service id
+            String service_id = leitor.next();
+            // read this trip id
+            String id = leitor.next();
+            // ignore headsign, short_name
+            leitor.skipNext(2);
+            // read direction id
+            int dir = leitor.nextInt();
+            // ignore block_id
+            leitor.skipNext();
+            // read shape_id
+            String shape_id = leitor.next();
+            // read wheelchair support
+            boolean w = (leitor.nextInt() == 1);
+            // ignore extra fields
+            for (int i = 9; i < leitor.getRecordSize(); i++)
+                leitor.skipNext();
 
-    public Map<String, Stop> getParadas() {
-        return paradas;
-    }
+            Route rota = rotas.get(route_id);
+            Service service = servicos.get(service_id);
+            Shape forma = formas.get(shape_id);
 
-    public void setParadas(Map<String, Stop> paradas) {
-        this.paradas = paradas;
-    }
-
-    public Map<String, Shape> getFormas() {
-        return formas;
-    }
-
-    public void setFormas(Map<String, Shape> formas) {
-        this.formas = formas;
-    }
-
-    public Map<String, Service> getServicos() {
-        return servicos;
-    }
-
-    public void setServicos(Map<String, Service> servicos) {
-        this.servicos = servicos;
-    }
-
-    public Map<String, Trip> getViagens() {
+            viagens.put(id, new TripCustom(id, rota, service, forma, dir, w));
+        }
         return viagens;
     }
 
-    public void setViagens(Map<String, Trip> viagens) {
-        this.viagens = viagens;
+
+    /**
+     * Metodo que adiciona todas as paradas que pertence as viagens
+     *
+     * @param nomeArquivo local onde esta armazenado o arquivo contenso as Viagens
+     * @throws FileNotFoundException quando o nomeArquivo for invalido
+     */
+    public void carregarTempoParadas(String nomeArquivo) throws FileNotFoundException {
+        CSVReader leitor = new CSVReader(nomeArquivo, ",");
+        String ultimaViagemId = null;
+        TripCustom ultimaViagem = null;
+        while (leitor.hasNext()) {
+            // read trip id
+            String trip_id = leitor.next();
+            // ignore arrival and departure time
+            leitor.skipNext(2);
+            // read stop id
+            String stop_id = leitor.next();
+            // ignore stop_sequence
+            leitor.skipNext();
+            if (ultimaViagem == null || !trip_id.equals(ultimaViagemId)) {
+                TripCustom viagem = viagens.get(trip_id);
+                ultimaViagem = viagem;
+            }
+            Stop parada = paradas.get(stop_id);
+            ultimaViagem.addStop(parada);
+        }
     }
 
-    public KDTree getArvoreKdParadas() {
-        return arvoreKdParadas;
+
+    /**
+     * Metodo que obtem a lista de onibus em comum entre o Destino e o ponto de Partida
+     * 1ºPasso - Obtem lista de Viagens do Destino
+     * 2ºPara cada Viagens da lista de Viagens do Destino obtem idViagemDestino em questao
+     * 3ºPara cada Viagem da Lista de Viagens da Partida obtem o idViagemPartida
+     * 4ºCompara os dois IDs (idViagemDestino , idViagemPartida)
+     * 5ºSe for igual adiciona a listaDeOnibusParaDestino.
+     *
+     * @param mapaPartida Map<IdParada,List<TripCustom> listDeViagensDaParada> contem lista de viagens das paradas de Partida
+     * @param mapaDestino Map<IdParada,List<TripCustom> listDeViagensDaParada> contem lista de viagens das paradas de Destino
+     * @return Lista contendo o nome completo do onibus / o nome abreviado do onibus
+     */
+    public List<String> obtemListaDeOnibusCompartilhados(Map<String, List<TripCustom>> mapaPartida, Map<String, List<TripCustom>> mapaDestino) {
+        List<String> listaDeOnibusParaDestino = new ArrayList<>();
+
+        mapaDestino.values().stream().forEach(listaDeViagensDestino -> {
+
+            for (int posicaoListaViagemDestino = 0; posicaoListaViagemDestino < listaDeViagensDestino.size(); posicaoListaViagemDestino++) {
+                String idViagemDestino = listaDeViagensDestino.get(posicaoListaViagemDestino).getId();
+
+                mapaPartida.values().stream().forEach(listaDeViagensPartida -> {
+
+                    for (int posicaoListaViagemPartida = 0; posicaoListaViagemPartida < listaDeViagensPartida.size(); posicaoListaViagemPartida++) {
+
+                        if (listaDeViagensPartida.get(posicaoListaViagemPartida).getId().equalsIgnoreCase(idViagemDestino)) {
+                            String nomeOnibusDestino = listaDeViagensPartida.get(posicaoListaViagemPartida).getRoute().getLongName()
+                                    + " | " + listaDeViagensPartida.get(posicaoListaViagemPartida).getRoute().getShortName();
+                            listaDeOnibusParaDestino.add(nomeOnibusDestino);
+
+                        }
+
+                    }
+                });
+            }
+        });
+
+        return listaDeOnibusParaDestino.stream().distinct().collect(Collectors.toList());
     }
 
-    public void setArvoreKdParadas(KDTree arvoreKdParadas) {
-        this.arvoreKdParadas = arvoreKdParadas;
-    }
+
 }

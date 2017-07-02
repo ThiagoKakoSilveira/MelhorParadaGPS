@@ -1,10 +1,14 @@
 package aplicacao;
 
 import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
+import aplicacao.data.TripCustom;
 import aplicacao.mineracao.PreCarregaDados;
 import datastructures.KDData;
+import smartcity.gtfs.Stop;
 
 public class Principal {
 
@@ -17,36 +21,53 @@ public class Principal {
 
         preCarregaDados.starUp();
 
-        System.out.println("Partida  --------");
-        System.out.println("");
-        System.out.println("Latitude  --------");
-        String latitudePartida = scanner.nextLine(); 
+        System.out.println("Dados da Partida ");
+        System.out.println("Latitude , Longitude");
+        String latitudeLongitude = scanner.nextLine();
+        String[] splitPartida = latitudeLongitude.split(",");
 
-        System.out.println("Longitude  --------");
-        String longitudePartida = scanner.nextLine();
+        System.out.println("Dados do Destino ");
+        System.out.println("Latitude , Longitude");
+        String dadosDestino = scanner.nextLine();
+        String[] splitDestino = dadosDestino.split(",");
 
-        System.out.println("DESTINO  --------");
-        System.out.println("");
-        System.out.println("Latitude  --------");
-        String latitudeDestino = scanner.nextLine();
-
-        System.out.println("Longitude  --------");
-        String longitudePDestino = scanner.nextLine();
-        
 /*        Campos Velho
        -30.0940906, -51.2267142
+
           Senac POA
         -30.0351924, -51.2266259
+
+        //perto casa(Nutripao)
+        -30.0937542,-51.230038
+
+        //PUC
+        -30.0570755,-51.1741819
 */
 
         try {
-            preCarregaDados.buscarParadasProximas(transformToKdData(latitudePartida, longitudePartida), 8);
+            List<Stop> stopListPartida = preCarregaDados.buscarParadasProximas(transformToKdData(splitPartida[0], splitPartida[1]), 15);
+            Map<String, List<TripCustom>> mapViagensParadaPartida = preCarregaDados.obtemViagensDeParadas(stopListPartida);
+            System.out.println();
+            List<Stop> stopListDestino = preCarregaDados.buscarParadasProximas(transformToKdData(splitDestino[0], splitDestino[1]), 15);
+            Map<String, List<TripCustom>> mapViagensParadaDestino = preCarregaDados.obtemViagensDeParadas(stopListDestino);
 
-            preCarregaDados.buscarParadasProximas(transformToKdData(latitudeDestino, longitudePDestino), 8);
+            List<String> strings = preCarregaDados.obtemListaDeOnibusCompartilhados(mapViagensParadaPartida, mapViagensParadaDestino);
+            if (strings.size() > 0) {
+                System.out.println("__________________________________________________");
+                System.out.println("Lista de onibus possiveis para ir ate seu destino");
+                strings.stream().forEach(System.out::println);
+                System.out.println("__________________________________________________");
+            } else {
+                //TODO Criar algoritimo para identifiicar os onibus(mais de um);
+                System.out.println("__________________________________________________");
+                System.out.println("Necessario Pegar dois onibus");
+                System.out.println("__________________________________________________");
+            }
+
         } catch (Exception e) {
             System.err.println("Erro ao processar paradas proximas   :  " + e.getMessage());
         }
-        
+
         scanner.close();
 
     }
