@@ -104,29 +104,31 @@ public class PreCarregaDados {
 
     /**
      * Método  para a busca das parada(s) mais próxima(s), utiliza a KDTree presente
-     * nessa classe<storng>Deve estar populada</storng>
+     * nessa classe<strong>Deve estar populada</strong>
      *
      * @param data         KDData que contém Latidude e Longitude do ponto de GPS que será usado para comparar com a árvoreKD
      *                     já previamente populada nesta mesma classe.
      * @param tamanhoBusca Range do número de paradas que serão retornados pelo algoritimos presente
      *                     no método <p>findKNearestPoints</p>
      */
-    public List<Stop> buscarParadasProximas(KDData data, int tamanhoBusca) {
+    public List<Stop> buscarParadasProximas(KDData data, int tamanhoBusca, double lat, double lon) {
 
         //TODO Fazer retorna a lista de paradas encontradas na busca do algoritimo
-        KDData[] dataRetorno = new KDData[tamanhoBusca];
-        arvoreKdParadas.findKNearestPoints(data, dataRetorno);
+    	List<Stop> paradasProximas = new ArrayList<>();
+    	KDData[] dataRetorno = new KDData[tamanhoBusca];
+        arvoreKdParadas.findKNearestPoints(data, dataRetorno);//aqui não entendi Pedrão, pois esse método era para retornar um inteiro, será q não era recursividade?
 
-        System.out.println("Parada Mais Perto: " + ((StopData) dataRetorno[0]).getParada());
-        System.out.println("Distância: " + dataRetorno[0].distance(data));
-        System.out.println("------");
+        System.out.println("\nParada Mais Perto: " + ((StopData) dataRetorno[0]).getParada());
+        System.out.println("Distância: " + dataRetorno[0].distance(data)+" (****Não entendi muito bem Galera por isso criei um método para o cálculo mas tbm não sei se ta certo!*****)");
+        System.out.print("Essas são as " + tamanhoBusca + " paradas mais próximas do seu destino:");
         for (KDData n : dataRetorno) {
-            System.out.print(n + " \n");
+        	StopData instancia = ((StopData) n);
+			System.out.print("\n"+instancia.getParada().getName() + " na Latitude "+ instancia.getParada().getGPSCoordinate().latitude + 
+					" e na Longitude " + instancia.getParada().getGPSCoordinate().longitude+ " com a distância de " + 
+					instancia.distanciaTeste(lat, lon) + " metros! (****Essa parte usa meu método mas da o mesmo resultado porém não entendi a medida, se é dos nós da árvore ou se é das paradas q pelo que entendi são os nós conferi?\n****)");
+			paradasProximas.add(instancia.getParada());
         }
-        List<Stop> paradasProximas = new ArrayList<>();
-        for (int i = 0; i < dataRetorno.length; i++) {
-            paradasProximas.add(((StopData) dataRetorno[i]).getParada());
-        }
+        
         return paradasProximas;
     }
 
