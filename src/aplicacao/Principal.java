@@ -1,6 +1,7 @@
 package aplicacao;
 
 import java.io.FileNotFoundException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -56,7 +57,7 @@ public class Principal {
             List<String> strings = preCarregaDados.obtemListaDeOnibusCompartilhados(mapViagensParadaPartida, mapViagensParadaDestino);
             if (strings.size() > 0) {
                 System.out.println("__________________________________________________");
-                System.out.println("Lista de ônibus possíveis para ir até seu destino");
+                System.out.println("Lista de ônibus possíveis de partida");
                 strings.stream().forEach(System.out::println);
                 System.out.println("__________________________________________________");
             } else {
@@ -64,6 +65,33 @@ public class Principal {
                 System.out.println("__________________________________________________");
                 System.out.println("Necessário Pegar dois ônibus");
                 System.out.println("__________________________________________________");
+
+                Collection<List<TripCustom>> partida = mapViagensParadaPartida.values();
+                Collection<List<TripCustom>> chegada = mapViagensParadaDestino.values();
+                
+                for(List<TripCustom> tclp: partida){
+                	for(TripCustom tcp: tclp){
+                		for(Stop s: tcp.getStops()){
+                			for(List<TripCustom> tclc: chegada){
+                            	for(TripCustom tcc: tclc){
+                            		if(!tcp.getRoute().getId().equals(tcc.getId())){
+                            			for(Stop s2: tcc.getStops()){
+                                			if(s.getId().equals(s2.getId())){
+                                				System.out.println("Onibus origem " + tcp.getRoute().getLongName());
+                                				System.out.println("Onibus destino " + tcc.getRoute().getLongName());
+                                				System.out.println("Parada intermediaria" + s);
+                                				break;
+                                			}
+                                		}
+                        			}
+                            		
+                            	}
+                            }
+                		}
+                	}
+                }
+               
+                
             }
 
         } catch (Exception e) {
