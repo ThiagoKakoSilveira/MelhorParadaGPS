@@ -41,10 +41,13 @@ public class Principal {
         -30.0351924, -51.2266259
 
         //perto casa(Nutripao)
-        -30.0937542,-51.230038
+        -30.0937542, -51.230038
 
         //PUC
-        -30.0570755,-51.1741819
+        -30.0570755, -51.1741819
+        
+        //Costa Gama (perto de casa)
+        -30.150693, -51.161494
 */
 
         try {
@@ -77,30 +80,29 @@ public class Principal {
 
                 Collection<List<TripCustom>> partida = mapViagensParadaPartida.values();
                 Collection<List<TripCustom>> chegada = mapViagensParadaDestino.values();
+                boolean achou = false;
                 
                 for(List<TripCustom> tclp: partida){
                 	for(TripCustom tcp: tclp){
                 		for(Stop s: tcp.getStops()){
                 			for(List<TripCustom> tclc: chegada){
                             	for(TripCustom tcc: tclc){
-                            		if(!tcp.getRoute().getId().equals(tcc.getId())){
+                            		if(tcp.getRoute().getShortName().equals(tcc.getRoute().getShortName())){
                             			for(Stop s2: tcc.getStops()){
                                 			if(s.getId().equals(s2.getId())){
                                 				System.out.println("Onibus origem " + tcp.getRoute().getLongName());
                                 				System.out.println("Onibus destino " + tcc.getRoute().getLongName());
                                 				System.out.println("Parada intermediária" + s);
+                                				achou = true;
                                 				break;
                                 			}
                                 		}
-                        			}
-                            		
+                        			}                            		
                             	}
                             }
                 		}
                 	}
-                }
-               
-                
+                }                
             }
 
         }catch (ParseException e) {
