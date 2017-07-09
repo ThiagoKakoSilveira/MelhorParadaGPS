@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
 
@@ -63,11 +64,13 @@ public class Principal {
                 System.out.println("__________________________________________________");
                 System.out.println("Lista de ônibus possíveis de partida");
 //                strings.stream().forEach(System.out::println);
-                for (int i = 0; i < onibus.size(); i++) {
-                	if(onibus.get(i).getStops().contains(stopListPartida.get(i))){
-                		System.out.println("Na parada "+ stopListPartida.get(i).getName() + " você pode pegar o(s) ônibus: " + 
-                				"\n"+onibus.get(i).getRoute().getLongName()+ " | " + onibus.get(i).getRoute().getShortName());
-                	}
+                for (int i = 0; i < onibus.size(); i++) {                	
+            		for (int j = 0; j < stopListPartida.size(); j++) {
+        				if(onibus.get(i).getStops().contains(stopListPartida.get(j))){
+        					System.out.println("Na parada "+ stopListPartida.get(j).getName() + " você pode pegar o(s) ônibus: " + 
+        							"\n"+onibus.get(i).getRoute().getLongName()+ " | " + onibus.get(i).getRoute().getShortName());
+        				}
+					}					
 				}
                 
                 System.out.println("__________________________________________________");

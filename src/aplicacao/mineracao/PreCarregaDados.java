@@ -261,12 +261,16 @@ public class PreCarregaDados {
                 });
             }
         });
-        List<TripCustom>tc;
-//        return listaDeOnibusParaDestino.stream().distinct().collect(Collectors.toList());
-        tc = listaDeOnibusParaDestino.stream().collect(Collectors.collectingAndThen(Collectors.toCollection( ()-> new TreeSet<>(comparingInt(TripCustom::get.id))), ArrayList::new));
+        
+//        List<Integer> targetList = new ArrayList<>(sourceSet);
+               
+        Set<TripCustom> tc = listaDeOnibusParaDestino.stream().collect(Collectors.toCollection(() -> new TreeSet<TripCustom>((p1, p2) -> p1.getRoute().getShortName()
+        							.compareToIgnoreCase(p2.getRoute().getShortName()))));
+//        return (List<TripCustom>) listaDeOnibusParaDestino.stream().collect(Collectors.toCollection(() -> new TreeSet<TripCustom>((p1, p2) -> p1.getId().compareTo(p2.getId()))));
+//        tc = listaDeOnibusParaDestino.stream().collect(Collectors.collectingAndThen(Collectors.toCollection( ()-> new TreeSet<>(comparingString(TripCustom::get.id))), ArrayList::new));
 //        tc = listaDeOnibusParaDestino.stream().map(WrapperTripCustom::new).distinct().map(WrapperTripCustom::unwrap)
 //        		.collect(Collectors.toList());
-        return tc;
+        return new ArrayList<>(tc);
     }
 
 
