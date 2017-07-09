@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
+
 import aplicacao.data.TripCustom;
 import aplicacao.mineracao.PreCarregaDados;
 import datastructures.KDData;
@@ -54,11 +56,20 @@ public class Principal {
             		Double.valueOf(splitPartida[0]), Double.valueOf(splitPartida[1]));
             Map<String, List<TripCustom>> mapViagensParadaDestino = preCarregaDados.obtemViagensDeParadas(stopListDestino);
 
-            List<String> strings = preCarregaDados.obtemListaDeOnibusCompartilhados(mapViagensParadaPartida, mapViagensParadaDestino);
-            if (strings.size() > 0) {
+            List<TripCustom> onibus = preCarregaDados.obtemListaDeOnibusCompartilhados(mapViagensParadaPartida, mapViagensParadaDestino);
+//            List<String> strings = preCarregaDados.obtemListaDeOnibusCompartilhados(mapViagensParadaPartida, mapViagensParadaDestino);
+            if (onibus.size() > 0) {
+//            if (strings.size() > 0) {
                 System.out.println("__________________________________________________");
                 System.out.println("Lista de ônibus possíveis de partida");
-                strings.stream().forEach(System.out::println);
+//                strings.stream().forEach(System.out::println);
+                for (int i = 0; i < onibus.size(); i++) {
+                	if(onibus.get(i).getStops().contains(stopListPartida.get(i))){
+                		System.out.println("Na parada "+ stopListPartida.get(i).getName() + " você pode pegar o(s) ônibus: " + 
+                				"\n"+onibus.get(i).getRoute().getLongName()+ " | " + onibus.get(i).getRoute().getShortName());
+                	}
+				}
+                
                 System.out.println("__________________________________________________");
             } else {
                 //TODO Criar algoritimo para identifiicar os ônibus(mais de um);
@@ -94,7 +105,13 @@ public class Principal {
                 
             }
 
-        } catch (Exception e) {
+        }catch (ParseException e) {
+            System.err.println("Impossível parsear essa String para Inteiro    :  " + e.getMessage());
+        }
+        catch (IndexOutOfBoundsException e) {
+            System.err.println("Estourou o array da lista    :  " + e.getMessage());
+        } 
+        catch (Exception e) {
             System.err.println("Erro ao processar paradas próximas   :  " + e.getMessage());
         }
 

@@ -116,16 +116,16 @@ public class PreCarregaDados {
         //TODO Fazer retorna a lista de paradas encontradas na busca do algoritimo
     	List<Stop> paradasProximas = new ArrayList<>();
     	KDData[] dataRetorno = new KDData[tamanhoBusca];
-        arvoreKdParadas.findKNearestPoints(data, dataRetorno);//aqui não entendi Pedrão, pois esse método era para retornar um inteiro, será q não era recursividade?
+        arvoreKdParadas.findKNearestPoints(data, dataRetorno);
 
         System.out.println("\nParada Mais Perto: " + ((StopData) dataRetorno[0]).getParada());
-        System.out.println("Distância: " + dataRetorno[0].distance(data)+" (****Não entendi muito bem Galera por isso criei um método para o cálculo mas tbm não sei se ta certo!*****)");
-        System.out.print("Essas são as " + tamanhoBusca + " paradas mais próximas do seu destino:");
+//        System.out.println("Distância: " + dataRetorno[0].distance(data)+" (****Não entendi muito bem Galera por isso criei um método para o cálculo mas tbm não sei se ta certo!*****)");
+//        System.out.print("Essas são as " + tamanhoBusca + " paradas mais próximas do seu destino:");
         for (KDData n : dataRetorno) {
         	StopData instancia = ((StopData) n);
-			System.out.print("\n"+instancia.getParada().getName() + " na Latitude "+ instancia.getParada().getGPSCoordinate().latitude + 
-					" e na Longitude " + instancia.getParada().getGPSCoordinate().longitude+ " com a distância de " + 
-					instancia.distanciaTeste(lat, lon) + " metros! (****Essa parte usa meu método mas da o mesmo resultado porém não entendi a medida, se é dos nós da árvore ou se é das paradas q pelo que entendi são os nós conferi?\n****)");
+//			System.out.print("\n"+instancia.getParada().getName() + " na Latitude "+ instancia.getParada().getGPSCoordinate().latitude + 
+//					" e na Longitude " + instancia.getParada().getGPSCoordinate().longitude+ " com a distância de " + 
+//					instancia.distanciaTeste(lat, lon) + " metros! (****Essa parte usa meu método mas da o mesmo resultado porém não entendi a medida, se é dos nós da árvore ou se é das paradas q pelo que entendi são os nós conferi?\n****)");
 			paradasProximas.add(instancia.getParada());
         }
         
@@ -239,31 +239,34 @@ public class PreCarregaDados {
      * @param mapaDestino Map<IdParada,List<TripCustom> listDeViagensDaParada> contém lista de viagens das paradas de Destino
      * @return Lista contendo o nome completo do ônibus / o nome abreviado do ônibus
      */
-    public List<String> obtemListaDeOnibusCompartilhados(Map<String, List<TripCustom>> mapaPartida, Map<String, List<TripCustom>> mapaDestino) {
-        List<String> listaDeOnibusParaDestino = new ArrayList<>();
-
+//    public List<String> obtemListaDeOnibusCompartilhados(Map<String, List<TripCustom>> mapaPartida, Map<String, List<TripCustom>> mapaDestino) {
+//        List<String> listaDeOnibusParaDestino = new ArrayList<>();
+    public List<TripCustom> obtemListaDeOnibusCompartilhados(Map<String, List<TripCustom>> mapaPartida, Map<String, List<TripCustom>> mapaDestino) {
+    	List<TripCustom> listaDeOnibusParaDestino = new ArrayList<>();
         mapaDestino.values().stream().forEach(listaDeViagensDestino -> {
 
             for (int posicaoListaViagemDestino = 0; posicaoListaViagemDestino < listaDeViagensDestino.size(); posicaoListaViagemDestino++) {
                 String idViagemDestino = listaDeViagensDestino.get(posicaoListaViagemDestino).getId();
 
                 mapaPartida.values().stream().forEach(listaDeViagensPartida -> {
-
+                	
                     for (int posicaoListaViagemPartida = 0; posicaoListaViagemPartida < listaDeViagensPartida.size(); posicaoListaViagemPartida++) {
-
                         if (listaDeViagensPartida.get(posicaoListaViagemPartida).getId().equalsIgnoreCase(idViagemDestino)) {
-                            String nomeOnibusDestino = listaDeViagensPartida.get(posicaoListaViagemPartida).getRoute().getLongName()
-                                    + " | " + listaDeViagensPartida.get(posicaoListaViagemPartida).getRoute().getShortName();
-                            listaDeOnibusParaDestino.add(nomeOnibusDestino);
-
+                        	TripCustom nomeOnibusDestino = listaDeViagensPartida.get(posicaoListaViagemPartida);
+//                            String nomeOnibusDestino = listaDeViagensPartida.get(posicaoListaViagemPartida).getRoute().getLongName()
+//                                    + " | " + listaDeViagensPartida.get(posicaoListaViagemPartida).getRoute().getShortName();
+                        	listaDeOnibusParaDestino.add(nomeOnibusDestino);//ver como jogar apenas as rotas para as paradas
                         }
-
                     }
                 });
             }
         });
-
-        return listaDeOnibusParaDestino.stream().distinct().collect(Collectors.toList());
+        List<TripCustom>tc;
+//        return listaDeOnibusParaDestino.stream().distinct().collect(Collectors.toList());
+        tc = listaDeOnibusParaDestino.stream().collect(Collectors.collectingAndThen(Collectors.toCollection( ()-> new TreeSet<>(comparingInt(TripCustom::get.id))), ArrayList::new));
+//        tc = listaDeOnibusParaDestino.stream().map(WrapperTripCustom::new).distinct().map(WrapperTripCustom::unwrap)
+//        		.collect(Collectors.toList());
+        return tc;
     }
 
 

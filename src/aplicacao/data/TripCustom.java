@@ -30,6 +30,10 @@ public class TripCustom extends GTFSObject {
 
         this.stops = new LinkedList<Stop>();
     }
+    
+    public int getIdInt(){
+    	return Integer.parseInt(getId());
+    }
 
     public Route getRoute() {
         return route;
