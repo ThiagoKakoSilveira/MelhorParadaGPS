@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by pvmeira on 01/07/17.
+ * Created by pvmeira Thiago Silveira e Arthur.
  */
 public class TripCustom extends GTFSObject {
     private Route route;

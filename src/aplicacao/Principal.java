@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
 
@@ -49,31 +48,27 @@ public class Principal {
 */
 
         try {
-            List<Stop> stopListPartida = preCarregaDados.buscarParadasProximas(transformToKdData(splitPartida[0], splitPartida[1]), 5, 
-            		Double.valueOf(splitPartida[0]), Double.valueOf(splitPartida[1]));
+            List<Stop> stopListPartida = preCarregaDados.buscarParadasProximas(transformToKdData(splitPartida[0], splitPartida[1]), 5);
             Map<String, List<TripCustom>> mapViagensParadaPartida = preCarregaDados.obtemViagensDeParadas(stopListPartida);
             System.out.println();
-            List<Stop> stopListDestino = preCarregaDados.buscarParadasProximas(transformToKdData(splitDestino[0], splitDestino[1]), 5, 
-            		Double.valueOf(splitPartida[0]), Double.valueOf(splitPartida[1]));
+            List<Stop> stopListDestino = preCarregaDados.buscarParadasProximas(transformToKdData(splitDestino[0], splitDestino[1]), 5);
             Map<String, List<TripCustom>> mapViagensParadaDestino = preCarregaDados.obtemViagensDeParadas(stopListDestino);
 
             List<TripCustom> onibus = preCarregaDados.obtemListaDeOnibusCompartilhados(mapViagensParadaPartida, mapViagensParadaDestino);
-//            List<String> strings = preCarregaDados.obtemListaDeOnibusCompartilhados(mapViagensParadaPartida, mapViagensParadaDestino);
             if (onibus.size() > 0) {
-//            if (strings.size() > 0) {
-                System.out.println("__________________________________________________");
+                System.out.println("____________________________________________________________________________________");
                 System.out.println("Lista de ônibus possíveis de partida");
-//                strings.stream().forEach(System.out::println);
                 for (int i = 0; i < onibus.size(); i++) {                	
             		for (int j = 0; j < stopListPartida.size(); j++) {
         				if(onibus.get(i).getStops().contains(stopListPartida.get(j))){
-        					System.out.println("Na parada "+ stopListPartida.get(j).getName() + " você pode pegar o(s) ônibus: " + 
+        					System.out.println("Na parada "+ stopListPartida.get(j).getName() + "com latitude: " + 
+        								stopListPartida.get(j).getGPSCoordinate().latitude + " e longitude: " + 
+        								stopListPartida.get(j).getGPSCoordinate().longitude + " você pode pegar o(s) ônibus: " + 
         							"\n"+onibus.get(i).getRoute().getLongName()+ " | " + onibus.get(i).getRoute().getShortName());
         				}
 					}					
-				}
-                
-                System.out.println("__________________________________________________");
+				}                
+                System.out.println("____________________________________________________________________________________");
             } else {
                 //TODO Criar algoritimo para identifiicar os ônibus(mais de um);
                 System.out.println("__________________________________________________");
@@ -93,7 +88,7 @@ public class Principal {
                                 			if(s.getId().equals(s2.getId())){
                                 				System.out.println("Onibus origem " + tcp.getRoute().getLongName());
                                 				System.out.println("Onibus destino " + tcc.getRoute().getLongName());
-                                				System.out.println("Parada intermediaria" + s);
+                                				System.out.println("Parada intermediária" + s);
                                 				break;
                                 			}
                                 		}

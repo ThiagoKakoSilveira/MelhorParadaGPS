@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * Classe de Mineração dos Dados, obtem os dados dos arquivos .txt  presentes na pasta dat,
  * e manipula esses dados conforme a necessidade.
  * <p>
- * Created by pvmeira on 01/07/17.
+ * Created by pvmeira Thiago Silveira e Arthur.
  */
 public class PreCarregaDados {
     /**
@@ -111,21 +111,15 @@ public class PreCarregaDados {
      * @param tamanhoBusca Range do número de paradas que serão retornados pelo algoritimos presente
      *                     no método <p>findKNearestPoints</p>
      */
-    public List<Stop> buscarParadasProximas(KDData data, int tamanhoBusca, double lat, double lon) {
+    public List<Stop> buscarParadasProximas(KDData data, int tamanhoBusca) {
 
-        //TODO Fazer retorna a lista de paradas encontradas na busca do algoritimo
     	List<Stop> paradasProximas = new ArrayList<>();
     	KDData[] dataRetorno = new KDData[tamanhoBusca];
         arvoreKdParadas.findKNearestPoints(data, dataRetorno);
 
         System.out.println("\nParada Mais Perto: " + ((StopData) dataRetorno[0]).getParada());
-//        System.out.println("Distância: " + dataRetorno[0].distance(data)+" (****Não entendi muito bem Galera por isso criei um método para o cálculo mas tbm não sei se ta certo!*****)");
-//        System.out.print("Essas são as " + tamanhoBusca + " paradas mais próximas do seu destino:");
         for (KDData n : dataRetorno) {
         	StopData instancia = ((StopData) n);
-//			System.out.print("\n"+instancia.getParada().getName() + " na Latitude "+ instancia.getParada().getGPSCoordinate().latitude + 
-//					" e na Longitude " + instancia.getParada().getGPSCoordinate().longitude+ " com a distância de " + 
-//					instancia.distanciaTeste(lat, lon) + " metros! (****Essa parte usa meu método mas da o mesmo resultado porém não entendi a medida, se é dos nós da árvore ou se é das paradas q pelo que entendi são os nós conferi?\n****)");
 			paradasProximas.add(instancia.getParada());
         }
         
