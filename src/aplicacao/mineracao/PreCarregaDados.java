@@ -117,7 +117,6 @@ public class PreCarregaDados {
     	KDData[] dataRetorno = new KDData[tamanhoBusca];
         arvoreKdParadas.findKNearestPoints(data, dataRetorno);
 
-        System.out.println("\nParada Mais Perto: " + ((StopData) dataRetorno[0]).getParada());
         for (KDData n : dataRetorno) {
         	StopData instancia = ((StopData) n);
 			paradasProximas.add(instancia.getParada());

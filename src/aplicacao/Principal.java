@@ -52,9 +52,11 @@ public class Principal {
 
         try {
             List<Stop> stopListPartida = preCarregaDados.buscarParadasProximas(transformToKdData(splitPartida[0], splitPartida[1]), 5);
+            System.out.println("A parada mais próxima da sua partida é a "+stopListPartida.get(0));
             Map<String, List<TripCustom>> mapViagensParadaPartida = preCarregaDados.obtemViagensDeParadas(stopListPartida);
             System.out.println();
             List<Stop> stopListDestino = preCarregaDados.buscarParadasProximas(transformToKdData(splitDestino[0], splitDestino[1]), 5);
+            System.out.println("A parada mais próxima do seu destino é a "+stopListDestino.get(0));
             Map<String, List<TripCustom>> mapViagensParadaDestino = preCarregaDados.obtemViagensDeParadas(stopListDestino);
 
             List<TripCustom> onibus = preCarregaDados.obtemListaDeOnibusCompartilhados(mapViagensParadaPartida, mapViagensParadaDestino);
@@ -94,7 +96,7 @@ public class Principal {
                                 				System.out.println("Onibus destino " + tcc.getRoute().getLongName());
                                 				System.out.println("Parada intermediária" + s);
                                 				achou = true;
-                                				break;
+                                				
                                 			}
                                 		}
                         			}                            		
