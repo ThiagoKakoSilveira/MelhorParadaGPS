@@ -236,23 +236,15 @@ public class PreCarregaDados {
      */
     public List<TripCustom> obtemListaDeOnibusCompartilhados(Map<String, List<TripCustom>> mapaPartida, Map<String, List<TripCustom>> mapaDestino) {
         List<TripCustom> listaDeOnibusParaDestino = new ArrayList<>();
-
-        mapaDestino.values().stream().forEach(listaDeViagensDestino -> {
-
-            for (int posicaoListaViagemDestino = 0; posicaoListaViagemDestino < listaDeViagensDestino.size(); posicaoListaViagemDestino++) {
-
-                String idViagemDestino = listaDeViagensDestino.get(posicaoListaViagemDestino).getId();
-                mapaPartida.values().stream().forEach(listaDeViagensPartida -> {
-                    for (int posicaoListaViagemPartida = 0; posicaoListaViagemPartida < listaDeViagensPartida.size(); posicaoListaViagemPartida++) {
-
-                        if (listaDeViagensPartida.get(posicaoListaViagemPartida).getId().equalsIgnoreCase(idViagemDestino)) {
-                            TripCustom nomeOnibusDestino = listaDeViagensPartida.get(posicaoListaViagemPartida);
-                            listaDeOnibusParaDestino.add(nomeOnibusDestino);//ver como jogar apenas as rotas para as paradas
-                        }
-                    }
-                });
-            }
-        });
+        mapaDestino.values().stream().forEach(listaDeViagensDestino -> listaDeViagensDestino.stream().forEach(viagem -> {
+            String idViagemDestino = viagem.getId();
+            mapaPartida.values().stream().forEach(listaDeViagensPartida -> listaDeViagensPartida.stream().forEach(viagemPartida -> {
+                if (viagemPartida.getId().equalsIgnoreCase(idViagemDestino)) {
+                    TripCustom nomeOnibusDestino = viagemPartida;
+                    listaDeOnibusParaDestino.add(nomeOnibusDestino);
+                }
+            }));
+        }));
         return new ArrayList<>(listaDeOnibusParaDestino.stream().collect(Collectors.toCollection(() -> new TreeSet<>((p1, p2) -> p1.getRoute().getShortName().compareToIgnoreCase(p2.getRoute().getShortName())))));
     }
 
@@ -307,6 +299,7 @@ public class PreCarregaDados {
 
     /**
      * Faz o print no console, para cada elementos do map executa o método
+     *
      * @param resultado2bus
      * @param mapParadasUtilizadasAlgoritimo
      */
