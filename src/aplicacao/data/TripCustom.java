@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by pvmeira on 01/07/17.
+ * Created by pvmeira Thiago Silveira e Arthur.
  */
 public class TripCustom extends GTFSObject {
     private Route route;
@@ -29,6 +29,10 @@ public class TripCustom extends GTFSObject {
         this.wheelchair = w;
 
         this.stops = new LinkedList<Stop>();
+    }
+    
+    public int getIdInt(){
+    	return Integer.parseInt(getId());
     }
 
     public Route getRoute() {
