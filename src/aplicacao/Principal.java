@@ -48,11 +48,11 @@ public class Principal {
         -30.150693, -51.161494
 */
         try {
-            List<Stop> stopListPartida = preCarregaDados.buscarParadasProximas(transformToKdData(splitPartida[0], splitPartida[1]), 5);
+            List<Stop> stopListPartida = preCarregaDados.buscarParadasProximas(transformaParaKDData(splitPartida[0], splitPartida[1]), 5);
             System.out.println("A parada mais próxima da sua partida é a "+stopListPartida.get(0));
             Map<String, List<TripCustom>> mapViagensParadaPartida = preCarregaDados.obtemViagensDeParadas(stopListPartida);
             System.out.println();
-            List<Stop> stopListDestino = preCarregaDados.buscarParadasProximas(transformToKdData(splitDestino[0], splitDestino[1]), 5);
+            List<Stop> stopListDestino = preCarregaDados.buscarParadasProximas(transformaParaKDData(splitDestino[0], splitDestino[1]), 5);
             System.out.println("A parada mais próxima do seu destino é a "+stopListDestino.get(0));
             Map<String, List<TripCustom>> mapViagensParadaDestino = preCarregaDados.obtemViagensDeParadas(stopListDestino);
 
@@ -65,7 +65,7 @@ public class Principal {
                 System.out.println("Necessário Pegar dois ônibus -- At this point, just use google maps plz");
                 System.out.println("__________________________________________________");
 
-                // TODO Dizer onibus inicial e possiveis onibus apartir desse mesmo
+                // TODO Dizer ônibus inicial e possíveis onibus apartir desse mesmo
                 preCarregaDados.executaAlgoritimo2Paradas(mapViagensParadaPartida, mapViagensParadaDestino, 1);
             }
         } catch (ParseException e) {
