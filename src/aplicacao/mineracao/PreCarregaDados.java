@@ -1,5 +1,6 @@
 package aplicacao.mineracao;
 
+import aplicacao.Principal;
 import aplicacao.data.StopData;
 import aplicacao.data.TripCustom;
 import datastructures.KDData;
@@ -113,15 +114,15 @@ public class PreCarregaDados {
      */
     public List<Stop> buscarParadasProximas(KDData data, int tamanhoBusca) {
 
-    	List<Stop> paradasProximas = new ArrayList<>();
-    	KDData[] dataRetorno = new KDData[tamanhoBusca];
+        List<Stop> paradasProximas = new ArrayList<>();
+        KDData[] dataRetorno = new KDData[tamanhoBusca];
         arvoreKdParadas.findKNearestPoints(data, dataRetorno);
 
         for (KDData n : dataRetorno) {
-        	StopData instancia = ((StopData) n);
-			paradasProximas.add(instancia.getParada());
+            StopData instancia = ((StopData) n);
+            paradasProximas.add(instancia.getParada());
         }
-        
+
         return paradasProximas;
     }
 
@@ -145,7 +146,8 @@ public class PreCarregaDados {
                 });
 
             });
-            viagensDaParada.put(parada.getId(), listaDeViagens);
+            List<TripCustom> listaFiltrada = new ArrayList<>(listaDeViagens.stream().collect(Collectors.toCollection(() -> new TreeSet<>((p1, p2) -> p1.getRoute().getShortName().compareToIgnoreCase(p2.getRoute().getShortName())))));
+            viagensDaParada.put(parada.getId(), listaFiltrada);
         });
         return viagensDaParada;
     }
@@ -232,39 +234,80 @@ public class PreCarregaDados {
      * @param mapaDestino Map<IdParada,List<TripCustom> listDeViagensDaParada> contém lista de viagens das paradas de Destino
      * @return Lista contendo o nome completo do ônibus / o nome abreviado do ônibus
      */
-//    public List<String> obtemListaDeOnibusCompartilhados(Map<String, List<TripCustom>> mapaPartida, Map<String, List<TripCustom>> mapaDestino) {
-//        List<String> listaDeOnibusParaDestino = new ArrayList<>();
     public List<TripCustom> obtemListaDeOnibusCompartilhados(Map<String, List<TripCustom>> mapaPartida, Map<String, List<TripCustom>> mapaDestino) {
-    	List<TripCustom> listaDeOnibusParaDestino = new ArrayList<>();
-        mapaDestino.values().stream().forEach(listaDeViagensDestino -> {
-
-            for (int posicaoListaViagemDestino = 0; posicaoListaViagemDestino < listaDeViagensDestino.size(); posicaoListaViagemDestino++) {
-                String idViagemDestino = listaDeViagensDestino.get(posicaoListaViagemDestino).getId();
-
-                mapaPartida.values().stream().forEach(listaDeViagensPartida -> {
-                	
-                    for (int posicaoListaViagemPartida = 0; posicaoListaViagemPartida < listaDeViagensPartida.size(); posicaoListaViagemPartida++) {
-                        if (listaDeViagensPartida.get(posicaoListaViagemPartida).getId().equalsIgnoreCase(idViagemDestino)) {
-                        	TripCustom nomeOnibusDestino = listaDeViagensPartida.get(posicaoListaViagemPartida);
-//                            String nomeOnibusDestino = listaDeViagensPartida.get(posicaoListaViagemPartida).getRoute().getLongName()
-//                                    + " | " + listaDeViagensPartida.get(posicaoListaViagemPartida).getRoute().getShortName();
-                        	listaDeOnibusParaDestino.add(nomeOnibusDestino);//ver como jogar apenas as rotas para as paradas
-                        }
-                    }
-                });
-            }
-        });
-        
-//        List<Integer> targetList = new ArrayList<>(sourceSet);
-               
-        Set<TripCustom> tc = listaDeOnibusParaDestino.stream().collect(Collectors.toCollection(() -> new TreeSet<TripCustom>((p1, p2) -> p1.getRoute().getShortName()
-        							.compareToIgnoreCase(p2.getRoute().getShortName()))));
-//        return (List<TripCustom>) listaDeOnibusParaDestino.stream().collect(Collectors.toCollection(() -> new TreeSet<TripCustom>((p1, p2) -> p1.getId().compareTo(p2.getId()))));
-//        tc = listaDeOnibusParaDestino.stream().collect(Collectors.collectingAndThen(Collectors.toCollection( ()-> new TreeSet<>(comparingString(TripCustom::get.id))), ArrayList::new));
-//        tc = listaDeOnibusParaDestino.stream().map(WrapperTripCustom::new).distinct().map(WrapperTripCustom::unwrap)
-//        		.collect(Collectors.toList());
-        return new ArrayList<>(tc);
+        List<TripCustom> listaDeOnibusParaDestino = new ArrayList<>();
+        mapaDestino.values().stream().forEach(listaDeViagensDestino -> listaDeViagensDestino.stream().forEach(viagem -> {
+            String idViagemDestino = viagem.getId();
+            mapaPartida.values().stream().forEach(listaDeViagensPartida -> listaDeViagensPartida.stream().forEach(viagemPartida -> {
+                if (viagemPartida.getId().equalsIgnoreCase(idViagemDestino)) {
+                    TripCustom nomeOnibusDestino = viagemPartida;
+                    listaDeOnibusParaDestino.add(nomeOnibusDestino);
+                }
+            }));
+        }));
+        return new ArrayList<>(listaDeOnibusParaDestino.stream().collect(Collectors.toCollection(() -> new TreeSet<>((p1, p2) -> p1.getRoute().getShortName().compareToIgnoreCase(p2.getRoute().getShortName())))));
     }
 
+    /**
+     * Algoritimo para fazer a  sugestão de onibus quando necessário mais de um onibus para chegar ao destino
+     * 1ª - Loop para obter as listas de viagens das paradas da partida
+     * 2ª - Loop para obter as paradas da viagem da vez
+     * 3ª - Executa logica para verificar se apartir da para em questão, existe um onibus que leve ao destino
+     * 4º - Joga em map as paradas que contem o onibus, para mostrar mais além
+     *
+     * @param mapViagensParadaPartida
+     * @param mapViagensParadaDestino
+     * @param tempo
+     */
+    public void executaAlgoritimo2Paradas(Map<String, List<TripCustom>> mapViagensParadaPartida, Map<String, List<TripCustom>> mapViagensParadaDestino, Integer tempo) {
+        //Variaveis
+        Collection<List<TripCustom>> partida = mapViagensParadaPartida.values();
+        List<TripCustom> resultado2bus = new ArrayList<>();
+        Map<Integer, List<Stop>> mapParadasUtilizadasAlgoritimo = new HashMap<>();
+        //Algoritimo start:
+        loopObtemListaDeListasViagens:
+        for (List<TripCustom> listaViagens : partida) {
+            List<TripCustom> listViagensSimplificada = new ArrayList<>(listaViagens.stream().collect(Collectors.toCollection(() -> new TreeSet<>((p1, p2) -> p1.getRoute().getShortName().compareToIgnoreCase(p2.getRoute().getShortName())))));
+            loopObtemViagem:
+            for (TripCustom viagem : listViagensSimplificada) {
+                int idLoop = 0;
+                loopObtemParada:
+                for (Stop parada : viagem.getStops()) {
+                    //Cordenadas
+                    double latitude = parada.getGPSCoordinate().latitude;
+                    double longitude = parada.getGPSCoordinate().longitude;
+                    //BuscaParadasProximas range
+                    List<Stop> listaParadasLoopObtemParada = buscarParadasProximas(Principal.transformaParaKDData(String.valueOf(latitude), String.valueOf(longitude)), tempo);
+                    Map<String, List<TripCustom>> viagensParadaAtual = obtemViagensDeParadas(listaParadasLoopObtemParada);
+                    List<TripCustom> resultadoLoopComum = obtemListaDeOnibusCompartilhados(viagensParadaAtual, mapViagensParadaDestino);
 
+                    if (resultadoLoopComum.size() > 0) {
+                        //Add viagem na lista de retorno
+                        resultadoLoopComum.stream().forEach(tripCustom1 -> {
+                            resultado2bus.add(tripCustom1);
+                        });
+                        //Add em um map as paradas utilizadas
+                        mapParadasUtilizadasAlgoritimo.put(idLoop, listaParadasLoopObtemParada);
+                        idLoop++;
+                    }
+                }
+            }
+        }
+        // Algoritimo end:
+        this.printParadasAlgoritimo2Onibus(resultado2bus, mapParadasUtilizadasAlgoritimo);
+    }
+
+    /**
+     * Faz o print no console, para cada elementos do map executa o método
+     *
+     * @param resultado2bus
+     * @param mapParadasUtilizadasAlgoritimo
+     */
+    private void printParadasAlgoritimo2Onibus(List<TripCustom> resultado2bus, Map<Integer, List<Stop>> mapParadasUtilizadasAlgoritimo) {
+        List<TripCustom> listaDeViagens2Onibus = new ArrayList<>(resultado2bus.stream().collect(Collectors.toCollection(() -> new TreeSet<>((p1, p2) -> p1.getRoute().getShortName().compareToIgnoreCase(p2.getRoute().getShortName())))));
+        mapParadasUtilizadasAlgoritimo.keySet().forEach(chave -> {
+            List<Stop> stopList = mapParadasUtilizadasAlgoritimo.get(chave);
+            Principal.printParadas(stopList, listaDeViagens2Onibus);
+        });
+    }
 }
