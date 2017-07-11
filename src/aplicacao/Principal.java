@@ -67,7 +67,7 @@ public class Principal {
             } else {
 
                 System.out.println("________________________________________________________________________________________________________");
-                System.out.println("Será necessário pegar dois ônibus ");
+                System.out.println("Será necessário pegar dois ônibus, você pode pegar qualquer uma dessas paradas: ");
                 System.out.println("________________________________________________________________________________________________________");
 
                 // TODO Dizer ônibus inicial e possíveis onibus apartir desse mesmo
@@ -90,18 +90,28 @@ public class Principal {
      * @param stopListPartida
      * @param onibus
      */
-    public static void printParadas(List<Stop> stopListPartida, List<TripCustom> onibus) {
+    public static void printParadas(List<Stop> stopListPartida, List<TripCustom> onibus, boolean umBus) {
     	int cont = 0;
         for (int i = 0; i < onibus.size(); i++) {
             for (int j = 0; j < stopListPartida.size(); j++) {
                 if (onibus.get(i).getStops().contains(stopListPartida.get(j))) {
-                	if(cont == 0){
-                		System.out.println("\nNa parada " + stopListPartida.get(j).getName() + "  com latitude: " +
-                				stopListPartida.get(j).getGPSCoordinate().latitude + " e longitude: " +
-                				stopListPartida.get(j).getGPSCoordinate().longitude + " você pode pegar o(s) ônibus: ");
-                		cont++;
+                	if(umBus){
+                		if(cont == 0){
+                			System.out.println("\nNa parada " + stopListPartida.get(j).getName() + "  com latitude: " +
+                					stopListPartida.get(j).getGPSCoordinate().latitude + " e longitude: " +
+                					stopListPartida.get(j).getGPSCoordinate().longitude + " você pode pegar o(s) ônibus: ");
+                			cont++;
+                		}
+                		System.out.println("\n" + onibus.get(i).getRoute().getLongName() + " | " + onibus.get(i).getRoute().getShortName());                		
+                	} else {
+                		if(cont == 0){
+                			System.out.println("\nDesça parada " + stopListPartida.get(j).getName() + "  com latitude: " +
+                					stopListPartida.get(j).getGPSCoordinate().latitude + " e longitude: " +
+                					stopListPartida.get(j).getGPSCoordinate().longitude + " e pegue o(s) ônibus: ");
+                			cont++;
+                		}
+                		System.out.println("\n" + onibus.get(i).getRoute().getLongName() + " | " + onibus.get(i).getRoute().getShortName());
                 	}
-                	System.out.println("\n" + onibus.get(i).getRoute().getLongName() + " | " + onibus.get(i).getRoute().getShortName());
                 }
             }
         }        
