@@ -54,16 +54,21 @@ public class Principal {
             System.out.println();
             List<Stop> stopListDestino = preCarregaDados.buscarParadasProximas(transformaParaKDData(splitDestino[0], splitDestino[1]), 5);
             System.out.println("A parada mais próxima do seu destino é a "+stopListDestino.get(0));
+            System.out.println();
             Map<String, List<TripCustom>> mapViagensParadaDestino = preCarregaDados.obtemViagensDeParadas(stopListDestino);
 
             List<TripCustom> onibus = preCarregaDados.obtemListaDeOnibusCompartilhados(mapViagensParadaPartida, mapViagensParadaDestino);
             if (onibus.size() > 0) {
+            	System.out.println("________________________________________________________________________________________________________");
+            	System.out.println("  Lista de ônibus possíveis de partida  ");
+            	System.out.println("________________________________________________________________________________________________________");
                 printParadas(stopListPartida, onibus);
+                System.out.println("________________________________________________________________________________________________________");
             } else {
 
-                System.out.println("__________________________________________________");
-                System.out.println("Necessário Pegar dois ônibus -- At this point, just use google maps plz");
-                System.out.println("__________________________________________________");
+                System.out.println("________________________________________________________________________________________________________");
+                System.out.println("Será necessário pegar dois ônibus ");
+                System.out.println("________________________________________________________________________________________________________");
 
                 // TODO Dizer ônibus inicial e possíveis onibus apartir desse mesmo
                 preCarregaDados.executaAlgoritimo2Paradas(mapViagensParadaPartida, mapViagensParadaDestino, 1);
@@ -86,19 +91,20 @@ public class Principal {
      * @param onibus
      */
     public static void printParadas(List<Stop> stopListPartida, List<TripCustom> onibus) {
-        System.out.println("____________________________________________________________________________________");
-        System.out.println("  Lista de ônibus possíveis de partida  ");
+    	int cont = 0;
         for (int i = 0; i < onibus.size(); i++) {
             for (int j = 0; j < stopListPartida.size(); j++) {
                 if (onibus.get(i).getStops().contains(stopListPartida.get(j))) {
-                    System.out.println("Na parada " + stopListPartida.get(j).getName() + "  com latitude: " +
-                            stopListPartida.get(j).getGPSCoordinate().latitude + " e longitude: " +
-                            stopListPartida.get(j).getGPSCoordinate().longitude + " você pode pegar o(s) ônibus: " +
-                            "\n" + onibus.get(i).getRoute().getLongName() + " | " + onibus.get(i).getRoute().getShortName());
+                	if(cont == 0){
+                		System.out.println("\nNa parada " + stopListPartida.get(j).getName() + "  com latitude: " +
+                				stopListPartida.get(j).getGPSCoordinate().latitude + " e longitude: " +
+                				stopListPartida.get(j).getGPSCoordinate().longitude + " você pode pegar o(s) ônibus: ");
+                		cont++;
+                	}
+                	System.out.println("\n" + onibus.get(i).getRoute().getLongName() + " | " + onibus.get(i).getRoute().getShortName());
                 }
             }
-        }
-        System.out.println("____________________________________________________________________________________");
+        }        
     }
 
     /**
