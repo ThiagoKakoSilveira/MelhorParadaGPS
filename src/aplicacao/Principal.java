@@ -62,7 +62,7 @@ public class Principal {
             	System.out.println("________________________________________________________________________________________________________");
             	System.out.println("  Lista de ônibus possíveis de partida  ");
             	System.out.println("________________________________________________________________________________________________________");
-                printParadas(stopListPartida, onibus);
+                printParadas(stopListPartida, onibus, true);
                 System.out.println("________________________________________________________________________________________________________");
             } else {
 
