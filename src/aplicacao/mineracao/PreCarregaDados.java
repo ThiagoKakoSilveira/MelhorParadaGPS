@@ -307,7 +307,7 @@ public class PreCarregaDados {
         List<TripCustom> listaDeViagens2Onibus = new ArrayList<>(resultado2bus.stream().collect(Collectors.toCollection(() -> new TreeSet<>((p1, p2) -> p1.getRoute().getShortName().compareToIgnoreCase(p2.getRoute().getShortName())))));
         mapParadasUtilizadasAlgoritimo.keySet().forEach(chave -> {
             List<Stop> stopList = mapParadasUtilizadasAlgoritimo.get(chave);
-            Principal.printParadas(stopList, listaDeViagens2Onibus);
+            Principal.printParadas(stopList, listaDeViagens2Onibus, false);
         });
     }
 }
